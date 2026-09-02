@@ -1,0 +1,15 @@
+# Node
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+
+# Build output
+bin/
+
+# Editors and operating system
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

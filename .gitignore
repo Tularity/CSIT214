@@ -1,3 +1,7 @@
+# Go
+backend/backend
+*.test
+
 # Node
 node_modules/
 dist/

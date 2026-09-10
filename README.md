@@ -8,6 +8,12 @@ requests, shelters and responders in one place, so a coordinator can see which
 incident to deal with first, place affected people somewhere that still has
 room, dispatch someone who is actually free, and leave a record of every step.
 
+## Scope
+
+The council asked for nine capability areas. The interface design covers all
+nine. The runnable prototype implements only the subset one working chain
+needs, rather than nine that are half built.
+
 ## Layout
 
 | Path | Contents |

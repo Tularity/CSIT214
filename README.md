@@ -8,6 +8,12 @@ requests, shelters and responders in one place, so a coordinator can see which
 incident to deal with first, place affected people somewhere that still has
 room, dispatch someone who is actually free, and leave a record of every step.
 
+The prototype concentrates on one path, end to end:
+
+> register an incident → the system scores and bands it → place the affected
+> people in a shelter with remaining capacity → dispatch an available responder
+> → resolve, releasing the capacity and the responder
+
 ## Scope
 
 The council asked for nine capability areas. The interface design covers all

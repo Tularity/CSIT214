@@ -27,3 +27,22 @@ needs, rather than nine that are half built.
 | `backend/` | Go API server |
 | `frontend/` | React and TypeScript client |
 | `seed/` | Sample data for demonstrations |
+
+## Screens
+
+| Capability area | Screens | In the prototype |
+| --- | --- | --- |
+| Incident registration | New incident form | Yes |
+| Assessment and prioritisation | Incident list, incident detail | Yes |
+| Shelter capacity | Shelter list, shelter detail | List only |
+| Responder dispatch | Responder list, roster | List only |
+| Resource allocation | Equipment inventory, allocation request | No |
+| Progress tracking | Incident timeline | Yes |
+| Operations dashboard | Dashboard | Yes |
+| Reporting | Report builder | No |
+| Audit trail | Activity log | Yes, read only |
+
+The shell is a header plus left navigation holding Dashboard, Incidents,
+Shelters, Responders and Activity log. Every list needs three states, not just
+the populated one: loading, empty, and failed to load. Priority bands are shown
+as colour **and** text, never colour alone.

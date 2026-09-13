@@ -3,14 +3,33 @@ package main
 import (
 	"database/sql"
 	"log"
+	"net/http"
 	"os"
 
 	_ "modernc.org/sqlite"
+
+	"github.com/Tularity/CSIT214/backend/handlers"
 )
 
 const defaultDBPath = "data.db"
 
 func main() {
+	database, err := openDatabase()
+	if err != nil {
+		log.Fatalf("database unavailable: %v", err)
+	}
+	defer database.Close()
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /api/health", handlers.Health)
+
+	log.Print("listening on :8080")
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		log.Fatalf("server stopped: %v", err)
+	}
+}
+
+func openDatabase() (*sql.DB, error) {
 	path := os.Getenv("CSIT214_DB_PATH")
 	if path == "" {
 		path = defaultDBPath
@@ -18,17 +37,11 @@ func main() {
 
 	database, err := sql.Open("sqlite", path)
 	if err != nil {
-		log.Fatalf("open %s: %v", path, err)
+		return nil, err
 	}
-	defer database.Close()
-
 	if err := database.Ping(); err != nil {
-		log.Fatalf("ping %s: %v", path, err)
+		database.Close()
+		return nil, err
 	}
-
-	var version string
-	if err := database.QueryRow(`SELECT sqlite_version()`).Scan(&version); err != nil {
-		log.Fatalf("query version: %v", err)
-	}
-	log.Printf("sqlite %s ready at %s", version, path)
+	return database, nil
 }

@@ -24,9 +24,9 @@ needs, rather than nine that are half built.
 
 | Path | Contents |
 | --- | --- |
-| `backend/` | Go API server |
-| `frontend/` | React and TypeScript client |
-| `seed/` | Sample data for demonstrations |
+| `backend/` | Go API server, standard library HTTP, SQLite via `modernc.org/sqlite` |
+| `frontend/` | React and TypeScript client, built with Vite |
+| `seed/` | Sample data loaded into an empty database on first start |
 
 ## Screens
 
@@ -46,3 +46,16 @@ The shell is a header plus left navigation holding Dashboard, Incidents,
 Shelters, Responders and Activity log. Every list needs three states, not just
 the populated one: loading, empty, and failed to load. Priority bands are shown
 as colour **and** text, never colour alone.
+
+## Running in development
+
+Go 1.23 or newer. There is no database server to install: the backend keeps its
+data in a local SQLite file.
+
+**Backend**
+
+```sh
+cd backend
+go run .
+curl http://localhost:8080/api/health     # {"status":"ok"}
+```

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"log"
 	"net/http"
@@ -11,18 +10,14 @@ import (
 	"syscall"
 	"time"
 
-	_ "modernc.org/sqlite"
-
+	"github.com/Tularity/CSIT214/backend/db"
 	"github.com/Tularity/CSIT214/backend/handlers"
 )
 
-const (
-	defaultAddr   = ":8080"
-	defaultDBPath = "data.db"
-)
+const defaultAddr = ":8080"
 
 func main() {
-	database, err := openDatabase()
+	database, err := db.Open(os.Getenv("CSIT214_DB_PATH"))
 	if err != nil {
 		log.Fatalf("database unavailable: %v", err)
 	}
@@ -63,21 +58,4 @@ func listenAddr() string {
 		return defaultAddr
 	}
 	return ":" + port
-}
-
-func openDatabase() (*sql.DB, error) {
-	path := os.Getenv("CSIT214_DB_PATH")
-	if path == "" {
-		path = defaultDBPath
-	}
-
-	database, err := sql.Open("sqlite", path)
-	if err != nil {
-		return nil, err
-	}
-	if err := database.Ping(); err != nil {
-		database.Close()
-		return nil, err
-	}
-	return database, nil
 }

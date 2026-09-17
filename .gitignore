@@ -1,4 +1,7 @@
 # Go
+backend/data.db
+backend/data.db-shm
+backend/data.db-wal
 backend/backend
 *.test
 

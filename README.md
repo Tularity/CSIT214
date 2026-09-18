@@ -49,8 +49,8 @@ as colour **and** text, never colour alone.
 
 ## Running in development
 
-Go 1.23 or newer. There is no database server to install: the backend keeps its
-data in a local SQLite file.
+Go 1.23 or newer and Node 20 or newer. There is no database server to install:
+the backend keeps its data in a local SQLite file.
 
 **Backend**
 
@@ -59,3 +59,17 @@ cd backend
 go run .
 curl http://localhost:8080/api/health     # {"status":"ok"}
 ```
+
+On first start it creates `backend/data.db`, applies the schema and loads
+`seed/seed.sql`. Delete that file to start again from the sample data.
+
+## Configuration
+
+Every setting has a working default; the prototype starts with no environment
+variables set at all.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PORT` | `8080` | Port the API listens on |
+| `CSIT214_DB_PATH` | `data.db` | SQLite file location |
+| `CSIT214_SEED_PATH` | `seed/seed.sql`, then `../seed/seed.sql` | Sample data used when the database is empty |

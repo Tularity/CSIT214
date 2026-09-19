@@ -73,3 +73,87 @@ variables set at all.
 | `PORT` | `8080` | Port the API listens on |
 | `CSIT214_DB_PATH` | `data.db` | SQLite file location |
 | `CSIT214_SEED_PATH` | `seed/seed.sql`, then `../seed/seed.sql` | Sample data used when the database is empty |
+
+## API
+
+Agreed between backend and frontend on 2026-09-19. Both sides build against
+this table; if something here turns out to be wrong, change it here first.
+
+Times are stored and returned as UTC in ISO 8601 (`2026-09-19T03:42:00Z`); the
+frontend converts to local time for display.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Liveness probe, returns `{"status":"ok"}` |
+| `GET` | `/api/incidents` | List incidents ordered by `priority_score` descending |
+| `POST` | `/api/incidents` | Create an incident. The server derives `priority_score` and `priority_band`, and sets `status` to `registered` |
+| `GET` | `/api/incidents/{id}` | Single incident |
+| `POST` | `/api/incidents/{id}/assess` | Move `status` to `assessed` |
+| `POST` | `/api/incidents/{id}/assign-shelter` | Body `{"shelter_id": n}`. Adds `people_affected` to the shelter's `capacity_used`, moves `status` to `assigned` |
+| `POST` | `/api/incidents/{id}/assign-responder` | Body `{"responder_id": n}`. Sets the responder to `assigned`, moves `status` to `in_progress` |
+| `POST` | `/api/incidents/{id}/resolve` | Moves `status` to `resolved`, releases the shelter capacity and returns the responder to `available` |
+| `GET` | `/api/shelters` | Shelters including remaining capacity |
+| `GET` | `/api/responders` | Responders and their current status |
+| `GET` | `/api/audit` | Audit entries, newest first |
+| `GET` | `/api/dashboard` | Counts per status, counts per priority band, shelter occupancy, number of available responders |
+
+Every write operation appends a row to `audit`. The client asked for this
+explicitly, so it is not optional.
+
+### Incident fields
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `id` | int | |
+| `type` | string | `flood`, `fire`, `storm`, `medical`, `other` |
+| `location` | string | Street address or landmark |
+| `description` | string | |
+| `people_affected` | int | 1–500 |
+| `vulnerable` | bool | Elderly, children or people with reduced mobility are involved |
+| `severity` | int | 1–5 |
+| `priority_score` | int | Derived, see below |
+| `priority_band` | string | `Critical`, `High`, `Medium`, `Low` |
+| `status` | string | `registered` → `assessed` → `assigned` → `in_progress` → `resolved` |
+| `shelter_id` | int or null | |
+| `responder_id` | int or null | |
+| `reported_at` | string | ISO 8601, UTC |
+
+`shelters`: `id`, `name`, `address`, `capacity_total`, `capacity_used`
+
+`responders`: `id`, `name`, `skill`, `status` (`available`, `assigned`, `off_duty`)
+
+`audit`: `id`, `at`, `actor`, `action`, `entity_type`, `entity_id`, `detail`
+
+### Priority formula
+
+```
+priority_score = severity * 10
+               + min(people_affected, 30)
+               + (vulnerable ? 20 : 0)
+```
+
+| Score | Band |
+| --- | --- |
+| 60 and above | Critical |
+| 40 to 59 | High |
+| 20 to 39 | Medium |
+| below 20 | Low |
+
+Worked example: `severity = 5`, `people_affected = 30`, `vulnerable = true`
+gives `50 + 30 + 20 = 100`, which is Critical. The formula is deliberately
+simple so that during the demonstration an operator can explain out loud why
+one incident outranks another.
+
+### Errors
+
+Failures return the matching status and a body of `{"error": "<message>"}`. The
+frontend shows the message as it arrives and does not rewrite it.
+
+| Condition | Status | Message |
+| --- | --- | --- |
+| `location` empty or longer than 120 characters | 400 | `Location is required (max 120 characters)` |
+| `people_affected` outside 1–500 | 400 | `People affected must be between 1 and 500` |
+| `severity` outside 1–5 | 400 | `Severity must be between 1 and 5` |
+| Shelter does not have enough remaining capacity | 409 | `Shelter has only N places remaining` |
+| Responder is not available | 409 | `Responder is not available` |
+| Status skips a step, for example resolving a registered incident | 409 | `Incident must be assessed first` |

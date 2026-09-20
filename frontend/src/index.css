@@ -1,0 +1,82 @@
+:root {
+  --ink: #16202c;
+  --ink-muted: #5b6b7c;
+  --line: #d6dee6;
+  --surface: #ffffff;
+  --page: #f2f5f8;
+  --accent: #1f5c8b;
+  --ok: #1d6f42;
+  --ok-surface: #e3f3e9;
+  --down: #9c2a2a;
+  --down-surface: #fbe6e6;
+  --waiting-surface: #eef1f4;
+
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  line-height: 1.5;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.app-client {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.1rem 1.25rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.panel p {
+  margin: 0 0 0.5rem;
+}
+
+.panel p:last-child {
+  margin-bottom: 0;
+}
+
+.panel-note {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+

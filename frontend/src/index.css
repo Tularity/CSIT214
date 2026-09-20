@@ -123,6 +123,20 @@ body {
   font-size: 0.9rem;
 }
 
+.panel-error {
+  color: var(--down);
+}
+
+.panel-code {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
 code {
   background: var(--page);
   border-radius: 4px;
@@ -130,3 +144,25 @@ code {
   font-size: 0.9em;
 }
 
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-waiting {
+  background: var(--waiting-surface);
+  color: var(--ink-muted);
+}
+
+.badge-up {
+  background: var(--ok-surface);
+  color: var(--ok);
+}
+
+.badge-down {
+  background: var(--down-surface);
+  color: var(--down);
+}

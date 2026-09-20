@@ -63,6 +63,16 @@ curl http://localhost:8080/api/health     # {"status":"ok"}
 On first start it creates `backend/data.db`, applies the schema and loads
 `seed/seed.sql`. Delete that file to start again from the sample data.
 
+**Frontend**
+
+```sh
+cd frontend
+npm install
+npm run dev                               # http://localhost:5173
+```
+
+The dev server proxies `/api` to the backend, so start the backend first.
+
 ## Configuration
 
 Every setting has a working default; the prototype starts with no environment
@@ -73,6 +83,7 @@ variables set at all.
 | `PORT` | `8080` | Port the API listens on |
 | `CSIT214_DB_PATH` | `data.db` | SQLite file location |
 | `CSIT214_SEED_PATH` | `seed/seed.sql`, then `../seed/seed.sql` | Sample data used when the database is empty |
+| `CSIT214_API_URL` | `http://localhost:8080` | Proxy target for the frontend dev server |
 
 ## API
 

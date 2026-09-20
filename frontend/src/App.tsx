@@ -1,4 +1,5 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
+import HealthBadge from './components/HealthBadge'
 import ActivityLog from './pages/ActivityLog'
 import Dashboard from './pages/Dashboard'
 import Incidents from './pages/Incidents'
@@ -21,6 +22,7 @@ export default function App() {
           <p className="app-client">CoastLink Council</p>
           <h1>Emergency Support Coordination</h1>
         </div>
+        <HealthBadge />
       </header>
 
       <div className="app-body">

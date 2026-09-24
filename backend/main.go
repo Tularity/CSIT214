@@ -23,12 +23,9 @@ func main() {
 	}
 	defer store.Close()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/health", handlers.Health)
-
 	server := &http.Server{
 		Addr:              listenAddr(),
-		Handler:           mux,
+		Handler:           handlers.New(store).Routes(),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

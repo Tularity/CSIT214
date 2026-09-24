@@ -16,7 +16,11 @@ var schema string
 
 const DefaultPath = "data.db"
 
-func Open(path string) (*sql.DB, error) {
+type Store struct {
+	db *sql.DB
+}
+
+func Open(path string) (*Store, error) {
 	if path == "" {
 		path = DefaultPath
 	}
@@ -41,7 +45,11 @@ func Open(path string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	return database, nil
+	return &Store{db: database}, nil
+}
+
+func (s *Store) Close() error {
+	return s.db.Close()
 }
 
 func seedIfEmpty(database *sql.DB) error {
@@ -72,7 +80,7 @@ func seedIfEmpty(database *sql.DB) error {
 }
 
 // findSeedFile looks beside the working directory first so that both `go run .`
-// from prototype/backend and a binary started from prototype/ find the same file.
+// from backend and a binary started from the repository root find the same file.
 func findSeedFile() (string, error) {
 	if configured := os.Getenv("CSIT214_SEED_PATH"); configured != "" {
 		if _, err := os.Stat(configured); err != nil {

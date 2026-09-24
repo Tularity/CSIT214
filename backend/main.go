@@ -17,11 +17,11 @@ import (
 const defaultAddr = ":8080"
 
 func main() {
-	database, err := db.Open(os.Getenv("CSIT214_DB_PATH"))
+	store, err := db.Open(os.Getenv("CSIT214_DB_PATH"))
 	if err != nil {
 		log.Fatalf("database unavailable: %v", err)
 	}
-	defer database.Close()
+	defer store.Close()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", handlers.Health)

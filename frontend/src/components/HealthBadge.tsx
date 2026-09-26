@@ -1,7 +1,8 @@
-import { useHealth } from '../useHealth'
+import type { Health } from '../types'
+import { useApiData } from '../useApiData'
 
 export default function HealthBadge() {
-  const state = useHealth()
+  const state = useApiData<Health>('/api/health')
 
   if (state.kind === 'loading') {
     return <span className="badge badge-waiting">Checking API</span>
@@ -13,5 +14,5 @@ export default function HealthBadge() {
       </span>
     )
   }
-  return <span className="badge badge-up">API {state.health.status}</span>
+  return <span className="badge badge-up">API {state.data.status}</span>
 }

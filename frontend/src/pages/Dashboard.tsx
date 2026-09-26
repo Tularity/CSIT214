@@ -1,7 +1,8 @@
-import { useHealth } from '../useHealth'
+import type { Health } from '../types'
+import { useApiData } from '../useApiData'
 
 export default function Dashboard() {
-  const state = useHealth()
+  const state = useApiData<Health>('/api/health')
 
   return (
     <>
@@ -10,7 +11,7 @@ export default function Dashboard() {
         <p>Response from <code>GET /api/health</code> through the development proxy:</p>
         {state.kind === 'loading' && <p className="panel-note">Requesting…</p>}
         {state.kind === 'failed' && <p className="panel-error">{state.message}</p>}
-        {state.kind === 'ready' && <pre className="panel-code">{JSON.stringify(state.health, null, 2)}</pre>}
+        {state.kind === 'ready' && <pre className="panel-code">{JSON.stringify(state.data, null, 2)}</pre>}
       </section>
 
       <section className="panel">

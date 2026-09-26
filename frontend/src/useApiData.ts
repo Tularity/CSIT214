@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react'
 import { getJSON } from './api'
 
-export type Health = { status: string }
-
-export type HealthState =
+export type ApiState<T> =
   | { kind: 'loading' }
-  | { kind: 'ready'; health: Health }
+  | { kind: 'ready'; data: T }
   | { kind: 'failed'; message: string }
 
-export function useHealth(): HealthState {
-  const [state, setState] = useState<HealthState>({ kind: 'loading' })
+export function useApiData<T>(path: string): ApiState<T> {
+  const [state, setState] = useState<ApiState<T>>({ kind: 'loading' })
 
   useEffect(() => {
     let active = true
 
-    getJSON<Health>('/api/health')
-      .then((health) => {
-        if (active) setState({ kind: 'ready', health })
+    getJSON<T>(path)
+      .then((data) => {
+        if (active) setState({ kind: 'ready', data })
       })
       .catch((error: Error) => {
         if (active) setState({ kind: 'failed', message: error.message })
@@ -25,7 +23,7 @@ export function useHealth(): HealthState {
     return () => {
       active = false
     }
-  }, [])
+  }, [path])
 
   return state
 }

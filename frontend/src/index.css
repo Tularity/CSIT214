@@ -199,3 +199,75 @@ code {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+/* Bands carry a colour and the word, never the colour alone. */
+.band {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.band-score {
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  font-variant-numeric: tabular-nums;
+}
+
+.band-critical {
+  background: #fbdedb;
+  color: #8c2018;
+}
+
+.band-high {
+  background: #fbe7cb;
+  color: #8a5200;
+}
+
+.band-medium {
+  background: #dde9f5;
+  color: #1f5c8b;
+}
+
+.band-low {
+  background: #e4e8ec;
+  color: #4c5966;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.status-in_progress {
+  border-color: #9dc0da;
+  background: #eef5fa;
+  color: var(--accent);
+}
+
+.status-resolved {
+  border-color: #a8d3ba;
+  background: var(--ok-surface);
+  color: var(--ok);
+}
+
+.tag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  background: #fbe7cb;
+  color: #8a5200;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

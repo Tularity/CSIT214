@@ -1,3 +1,4 @@
+import PriorityBadge from '../components/PriorityBadge'
 import type { Incident } from '../types'
 import { useApiData } from '../useApiData'
 
@@ -38,6 +39,15 @@ export default function Incidents() {
     )
   }
 
+  if (state.data.length === 0) {
+    return (
+      <section className="panel">
+        <h2>Incidents</h2>
+        <p className="panel-note">Nothing has been registered yet.</p>
+      </section>
+    )
+  }
+
   return (
     <section className="panel">
       <h2>Incidents</h2>
@@ -58,11 +68,20 @@ export default function Incidents() {
         <tbody>
           {state.data.map((incident) => (
             <tr key={incident.id}>
-              <td>{incident.priority_band}</td>
+              <td>
+                <PriorityBadge band={incident.priority_band} score={incident.priority_score} />
+              </td>
               <td>{typeLabels[incident.type]}</td>
-              <td>{incident.location}</td>
+              <td>
+                {incident.location}
+                {incident.vulnerable && <span className="tag">Vulnerable people</span>}
+              </td>
               <td className="numeric">{incident.people_affected}</td>
-              <td>{statusLabels[incident.status]}</td>
+              <td>
+                <span className={`status status-${incident.status}`}>
+                  {statusLabels[incident.status]}
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -18,6 +18,7 @@ func (a *API) Routes() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", a.Health)
 	mux.HandleFunc("GET /api/incidents", a.ListIncidents)
+	mux.HandleFunc("POST /api/incidents", a.CreateIncident)
 	mux.HandleFunc("GET /api/incidents/{id}", a.GetIncident)
 	mux.HandleFunc("GET /api/shelters", a.ListShelters)
 	mux.HandleFunc("GET /api/responders", a.ListResponders)

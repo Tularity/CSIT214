@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/Tularity/CSIT214/backend/db"
+	"github.com/Tularity/CSIT214/backend/models"
 )
 
 func (a *API) ListIncidents(w http.ResponseWriter, r *http.Request) {
@@ -37,4 +39,27 @@ func (a *API) GetIncident(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, incident)
+}
+
+func (a *API) CreateIncident(w http.ResponseWriter, r *http.Request) {
+	var input models.NewIncident
+	if !decodeJSON(w, r, &input) {
+		return
+	}
+
+	input = input.Normalized()
+	if err := input.Validate(); err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	incident, err := a.store.CreateIncident(r.Context(), actorFrom(r), input)
+	if err != nil {
+		log.Printf("create incident: %v", err)
+		writeError(w, http.StatusInternalServerError, "Could not register the incident")
+		return
+	}
+
+	w.Header().Set("Location", fmt.Sprintf("/api/incidents/%d", incident.ID))
+	writeJSON(w, http.StatusCreated, incident)
 }

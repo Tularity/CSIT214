@@ -25,7 +25,10 @@ func Open(path string) (*Store, error) {
 		path = DefaultPath
 	}
 
-	database, err := sql.Open("sqlite", path+"?_pragma=foreign_keys(1)&_pragma=busy_timeout(5000)")
+	// _txlock=immediate makes a write transaction take the lock when it starts,
+	// so two concurrent writers wait on busy_timeout instead of one failing
+	// half-way through when it tries to upgrade a read lock.
+	database, err := sql.Open("sqlite", path+"?_pragma=foreign_keys(1)&_pragma=busy_timeout(5000)&_txlock=immediate")
 	if err != nil {
 		return nil, fmt.Errorf("open %s: %w", path, err)
 	}

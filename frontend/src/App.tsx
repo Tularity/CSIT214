@@ -3,6 +3,7 @@ import HealthBadge from './components/HealthBadge'
 import ActivityLog from './pages/ActivityLog'
 import Dashboard from './pages/Dashboard'
 import Incidents from './pages/Incidents'
+import NewIncident from './pages/NewIncident'
 import Responders from './pages/Responders'
 import Shelters from './pages/Shelters'
 
@@ -38,6 +39,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/incidents" element={<Incidents />} />
+            <Route path="/incidents/new" element={<NewIncident />} />
             <Route path="/shelters" element={<Shelters />} />
             <Route path="/responders" element={<Responders />} />
             <Route path="/activity" element={<ActivityLog />} />

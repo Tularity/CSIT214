@@ -1,22 +1,7 @@
 import PriorityBadge from '../components/PriorityBadge'
+import { statusLabels, typeLabels } from '../labels'
 import type { Incident } from '../types'
 import { useApiData } from '../useApiData'
-
-const typeLabels: Record<Incident['type'], string> = {
-  flood: 'Flood',
-  fire: 'Fire',
-  storm: 'Storm',
-  medical: 'Medical',
-  other: 'Other',
-}
-
-const statusLabels: Record<Incident['status'], string> = {
-  registered: 'Registered',
-  assessed: 'Assessed',
-  assigned: 'Shelter assigned',
-  in_progress: 'In progress',
-  resolved: 'Resolved',
-}
 
 export default function Incidents() {
   const state = useApiData<Incident[]>('/api/incidents')

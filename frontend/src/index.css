@@ -364,3 +364,18 @@ code {
   border-color: #174a70;
   background: #174a70;
 }
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.table tr.row-new td {
+  background: #fff8e1;
+}
+
+.table tr.row-new td:first-child {
+  box-shadow: inset 3px 0 0 #e0a100;
+}

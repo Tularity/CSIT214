@@ -1,3 +1,4 @@
+import { Link, useSearchParams } from 'react-router-dom'
 import PriorityBadge from '../components/PriorityBadge'
 import { statusLabels, typeLabels } from '../labels'
 import type { Incident } from '../types'
@@ -5,6 +6,8 @@ import { useApiData } from '../useApiData'
 
 export default function Incidents() {
   const state = useApiData<Incident[]>('/api/incidents')
+  const [searchParams] = useSearchParams()
+  const createdId = Number(searchParams.get('created'))
 
   if (state.kind === 'loading') {
     return (
@@ -29,16 +32,26 @@ export default function Incidents() {
       <section className="panel">
         <h2>Incidents</h2>
         <p className="panel-note">Nothing has been registered yet.</p>
+        <Link to="/incidents/new" className="button button-primary">
+          Register incident
+        </Link>
       </section>
     )
   }
 
   return (
     <section className="panel">
-      <h2>Incidents</h2>
-      <p className="panel-note">
-        {state.data.length} on the board, highest priority first.
-      </p>
+      <div className="panel-header">
+        <div>
+          <h2>Incidents</h2>
+          <p className="panel-note">
+            {state.data.length} on the board, highest priority first.
+          </p>
+        </div>
+        <Link to="/incidents/new" className="button button-primary">
+          Register incident
+        </Link>
+      </div>
 
       <table className="table">
         <thead>
@@ -52,7 +65,7 @@ export default function Incidents() {
         </thead>
         <tbody>
           {state.data.map((incident) => (
-            <tr key={incident.id}>
+            <tr key={incident.id} className={incident.id === createdId ? 'row-new' : undefined}>
               <td>
                 <PriorityBadge band={incident.priority_band} score={incident.priority_score} />
               </td>

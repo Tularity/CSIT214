@@ -20,6 +20,10 @@ func (a *API) Routes() *http.ServeMux {
 	mux.HandleFunc("GET /api/incidents", a.ListIncidents)
 	mux.HandleFunc("POST /api/incidents", a.CreateIncident)
 	mux.HandleFunc("GET /api/incidents/{id}", a.GetIncident)
+	mux.HandleFunc("POST /api/incidents/{id}/assess", a.AssessIncident)
+	mux.HandleFunc("POST /api/incidents/{id}/assign-shelter", a.AssignShelter)
+	mux.HandleFunc("POST /api/incidents/{id}/assign-responder", a.AssignResponder)
+	mux.HandleFunc("POST /api/incidents/{id}/resolve", a.ResolveIncident)
 	mux.HandleFunc("GET /api/shelters", a.ListShelters)
 	mux.HandleFunc("GET /api/responders", a.ListResponders)
 	return mux

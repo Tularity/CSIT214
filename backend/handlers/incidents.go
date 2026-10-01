@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/Tularity/CSIT214/backend/db"
 	"github.com/Tularity/CSIT214/backend/models"
@@ -22,9 +21,8 @@ func (a *API) ListIncidents(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) GetIncident(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
-	if err != nil || id < 1 {
-		writeError(w, http.StatusBadRequest, "Incident id must be a positive number")
+	id, ok := incidentID(w, r)
+	if !ok {
 		return
 	}
 

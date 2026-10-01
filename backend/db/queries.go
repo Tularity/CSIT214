@@ -9,7 +9,6 @@ import (
 	"github.com/Tularity/CSIT214/backend/models"
 )
 
-var ErrNotFound = errors.New("record not found")
 
 const incidentColumns = `id, type, location, description, people_affected,
 	vulnerable, severity, priority_score, priority_band, status,

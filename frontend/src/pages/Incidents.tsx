@@ -71,7 +71,7 @@ export default function Incidents() {
               </td>
               <td>{typeLabels[incident.type]}</td>
               <td>
-                {incident.location}
+                <Link to={`/incidents/${incident.id}`}>{incident.location}</Link>
                 {incident.vulnerable && <span className="tag">Vulnerable people</span>}
               </td>
               <td className="numeric">{incident.people_affected}</td>

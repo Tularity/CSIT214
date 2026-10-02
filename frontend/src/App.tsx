@@ -2,6 +2,7 @@ import { NavLink, Route, Routes } from 'react-router-dom'
 import HealthBadge from './components/HealthBadge'
 import ActivityLog from './pages/ActivityLog'
 import Dashboard from './pages/Dashboard'
+import IncidentDetail from './pages/IncidentDetail'
 import Incidents from './pages/Incidents'
 import NewIncident from './pages/NewIncident'
 import Responders from './pages/Responders'
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/incidents" element={<Incidents />} />
             <Route path="/incidents/new" element={<NewIncident />} />
+            <Route path="/incidents/:id" element={<IncidentDetail />} />
             <Route path="/shelters" element={<Shelters />} />
             <Route path="/responders" element={<Responders />} />
             <Route path="/activity" element={<ActivityLog />} />

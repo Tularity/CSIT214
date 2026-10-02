@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getJSON } from './api'
 
 export type ApiState<T> =
@@ -6,8 +6,11 @@ export type ApiState<T> =
   | { kind: 'ready'; data: T }
   | { kind: 'failed'; message: string }
 
-export function useApiData<T>(path: string): ApiState<T> {
+// While reloading, the previous data stays on screen instead of flashing back
+// to a loading state after every action.
+export function useApiResource<T>(path: string): [ApiState<T>, () => void] {
   const [state, setState] = useState<ApiState<T>>({ kind: 'loading' })
+  const [version, setVersion] = useState(0)
 
   useEffect(() => {
     let active = true
@@ -23,7 +26,12 @@ export function useApiData<T>(path: string): ApiState<T> {
     return () => {
       active = false
     }
-  }, [path])
+  }, [path, version])
 
-  return state
+  const reload = useCallback(() => setVersion((current) => current + 1), [])
+  return [state, reload]
+}
+
+export function useApiData<T>(path: string): ApiState<T> {
+  return useApiResource<T>(path)[0]
 }

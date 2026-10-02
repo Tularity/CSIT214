@@ -379,3 +379,40 @@ code {
 .table tr.row-new td:first-child {
   box-shadow: inset 3px 0 0 #e0a100;
 }
+
+.panel a,
+.breadcrumb a {
+  color: var(--accent);
+}
+
+.breadcrumb {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+.subheading {
+  margin: 1.25rem 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.9rem 1.5rem;
+  margin: 1rem 0 0;
+}
+
+.facts dt {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+
+.facts dd {
+  margin: 0.2rem 0 0;
+  font-weight: 600;
+}

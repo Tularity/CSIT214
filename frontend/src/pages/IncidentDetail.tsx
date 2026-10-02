@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import IncidentActions from '../components/IncidentActions'
 import PriorityBadge from '../components/PriorityBadge'
 import { statusLabels, typeLabels } from '../labels'
 import type { Incident, Responder, Shelter } from '../types'
@@ -13,9 +14,15 @@ function formatReportedAt(iso: string): string {
 
 export default function IncidentDetail() {
   const { id } = useParams()
-  const [incidentState] = useApiResource<Incident>(`/api/incidents/${id}`)
-  const [shelterState] = useApiResource<Shelter[]>('/api/shelters')
-  const [responderState] = useApiResource<Responder[]>('/api/responders')
+  const [incidentState, reloadIncident] = useApiResource<Incident>(`/api/incidents/${id}`)
+  const [shelterState, reloadShelters] = useApiResource<Shelter[]>('/api/shelters')
+  const [responderState, reloadResponders] = useApiResource<Responder[]>('/api/responders')
+
+  function refreshAll() {
+    reloadIncident()
+    reloadShelters()
+    reloadResponders()
+  }
 
   if (incidentState.kind === 'loading') {
     return (
@@ -96,6 +103,13 @@ export default function IncidentDetail() {
         <h3 className="subheading">Description</h3>
         <p>{incident.description || <span className="panel-note">No description given.</span>}</p>
       </section>
+
+      <IncidentActions
+        incident={incident}
+        shelters={shelters}
+        responders={responders}
+        onChanged={refreshAll}
+      />
     </>
   )
 }

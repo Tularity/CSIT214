@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { postJSON } from '../api'
+import { useNotify } from '../notices'
 import { typeLabels } from '../labels'
 import type { Incident, IncidentType } from '../types'
 
@@ -32,6 +33,7 @@ const severityHints: Record<string, string> = {
 
 export default function NewIncident() {
   const navigate = useNavigate()
+  const notify = useNotify()
   const [values, setValues] = useState<FormValues>(initialValues)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -54,6 +56,10 @@ export default function NewIncident() {
         severity: Number(values.severity),
         vulnerable: values.vulnerable,
       })
+      notify(
+        'success',
+        `Incident #${created.id} registered at priority ${created.priority_score} (${created.priority_band}).`,
+      )
       navigate(`/incidents?created=${created.id}`)
     } catch (failure) {
       setError((failure as Error).message)

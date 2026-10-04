@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { postJSON } from '../api'
+import { useNotify } from '../notices'
 import type { Incident, Responder, Shelter } from '../types'
 
 type IncidentActionsProps = {
@@ -16,8 +17,8 @@ const responderStatusNotes: Record<Responder['status'], string> = {
 }
 
 export default function IncidentActions({ incident, shelters, responders, onChanged }: IncidentActionsProps) {
+  const notify = useNotify()
   const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [shelterId, setShelterId] = useState('')
   const [responderId, setResponderId] = useState('')
 
@@ -28,19 +29,23 @@ export default function IncidentActions({ incident, shelters, responders, onChan
   const chosenShelter = shelterId || String(roomyShelter?.id ?? shelters[0]?.id ?? '')
   const chosenResponder = responderId || String(freeResponder?.id ?? responders[0]?.id ?? '')
 
-  async function run(action: string, payload?: unknown) {
+  async function run(action: string, success: string, payload?: unknown) {
     setBusy(true)
-    setError(null)
     try {
       await postJSON<Incident>(`/api/incidents/${incident.id}/${action}`, payload)
       setShelterId('')
       setResponderId('')
+      notify('success', success)
       onChanged()
     } catch (failure) {
-      setError((failure as Error).message)
+      notify('error', (failure as Error).message)
     } finally {
       setBusy(false)
     }
+  }
+
+  function nameOf<T extends { id: number; name: string }>(records: T[], id: string): string {
+    return records.find((record) => String(record.id) === id)?.name ?? `#${id}`
   }
 
   const canAssess = incident.status === 'registered'
@@ -65,7 +70,7 @@ export default function IncidentActions({ incident, shelters, responders, onChan
         {canAssess && (
           <div className="action">
             <p>Confirm the details with the caller before anything is committed to it.</p>
-            <button className="button button-primary" disabled={busy} onClick={() => run('assess')}>
+            <button className="button button-primary" disabled={busy} onClick={() => run('assess', `Incident #${incident.id} assessed.`)}>
               Assess
             </button>
           </div>
@@ -86,7 +91,13 @@ export default function IncidentActions({ incident, shelters, responders, onChan
             <button
               className="button button-primary"
               disabled={busy || chosenShelter === ''}
-              onClick={() => run('assign-shelter', { shelter_id: Number(chosenShelter) })}
+              onClick={() =>
+                run(
+                  'assign-shelter',
+                  `${incident.people_affected} people placed at ${nameOf(shelters, chosenShelter)}.`,
+                  { shelter_id: Number(chosenShelter) },
+                )
+              }
             >
               Assign shelter
             </button>
@@ -108,7 +119,11 @@ export default function IncidentActions({ incident, shelters, responders, onChan
             <button
               className={canPlace ? 'button' : 'button button-primary'}
               disabled={busy || chosenResponder === ''}
-              onClick={() => run('assign-responder', { responder_id: Number(chosenResponder) })}
+              onClick={() =>
+                run('assign-responder', `${nameOf(responders, chosenResponder)} dispatched.`, {
+                  responder_id: Number(chosenResponder),
+                })
+              }
             >
               Dispatch responder
             </button>
@@ -121,15 +136,13 @@ export default function IncidentActions({ incident, shelters, responders, onChan
             <button
               className={incident.status === 'in_progress' ? 'button button-primary' : 'button'}
               disabled={busy}
-              onClick={() => run('resolve')}
+              onClick={() => run('resolve', `Incident #${incident.id} resolved; its shelter places and responder are free again.`)}
             >
               Resolve
             </button>
           </div>
         )}
       </div>
-
-      {error && <p className="panel-error">{error}</p>}
     </section>
   )
 }

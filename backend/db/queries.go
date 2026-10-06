@@ -9,7 +9,6 @@ import (
 	"github.com/Tularity/CSIT214/backend/models"
 )
 
-
 const incidentColumns = `id, type, location, description, people_affected,
 	vulnerable, severity, priority_score, priority_band, status,
 	shelter_id, responder_id, reported_at`

@@ -41,3 +41,24 @@ type AuditEntry struct {
 	EntityID   int64  `json:"entity_id"`
 	Detail     string `json:"detail"`
 }
+
+type ShelterOccupancy struct {
+	ID               int64  `json:"id"`
+	Name             string `json:"name"`
+	CapacityTotal    int    `json:"capacity_total"`
+	CapacityUsed     int    `json:"capacity_used"`
+	OccupancyPercent int    `json:"occupancy_percent"`
+}
+
+type Dashboard struct {
+	IncidentsTotal      int                `json:"incidents_total"`
+	IncidentsOpen       int                `json:"incidents_open"`
+	IncidentsByStatus   map[string]int     `json:"incidents_by_status"`
+	IncidentsByBand     map[string]int     `json:"incidents_by_band"`
+	Shelters            []ShelterOccupancy `json:"shelters"`
+	CapacityTotal       int                `json:"capacity_total"`
+	CapacityUsed        int                `json:"capacity_used"`
+	OccupancyPercent    int                `json:"occupancy_percent"`
+	RespondersAvailable int                `json:"responders_available"`
+	RespondersByStatus  map[string]int     `json:"responders_by_status"`
+}

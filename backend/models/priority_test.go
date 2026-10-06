@@ -4,12 +4,12 @@ import "testing"
 
 func TestPriorityScore(t *testing.T) {
 	cases := []struct {
-		name            string
-		severity        int
-		peopleAffected  int
-		vulnerable      bool
-		wantScore       int
-		wantBand        string
+		name           string
+		severity       int
+		peopleAffected int
+		vulnerable     bool
+		wantScore      int
+		wantBand       string
 	}{
 		{"worked example from the specification", 5, 30, true, 100, BandCritical},
 		{"people affected are capped at thirty", 5, 120, true, 100, BandCritical},

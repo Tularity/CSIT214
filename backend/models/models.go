@@ -31,3 +31,13 @@ type Responder struct {
 	Skill  string `json:"skill"`
 	Status string `json:"status"`
 }
+
+type AuditEntry struct {
+	ID         int64  `json:"id"`
+	At         string `json:"at"`
+	Actor      string `json:"actor"`
+	Action     string `json:"action"`
+	EntityType string `json:"entity_type"`
+	EntityID   int64  `json:"entity_id"`
+	Detail     string `json:"detail"`
+}

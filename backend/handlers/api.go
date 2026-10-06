@@ -26,5 +26,6 @@ func (a *API) Routes() *http.ServeMux {
 	mux.HandleFunc("POST /api/incidents/{id}/resolve", a.ResolveIncident)
 	mux.HandleFunc("GET /api/shelters", a.ListShelters)
 	mux.HandleFunc("GET /api/responders", a.ListResponders)
+	mux.HandleFunc("GET /api/audit", a.ListAudit)
 	return mux
 }

@@ -1,27 +1,26 @@
 import { Link, useParams } from 'react-router-dom'
 import IncidentActions from '../components/IncidentActions'
+import IncidentHistory from '../components/IncidentHistory'
 import PriorityBadge from '../components/PriorityBadge'
+import { formatDateTime } from '../format'
 import { statusLabels, typeLabels } from '../labels'
-import type { Incident, Responder, Shelter } from '../types'
+import type { AuditEntry, Incident, Responder, Shelter } from '../types'
 import { useApiResource } from '../useApiData'
-
-function formatReportedAt(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
-}
 
 export default function IncidentDetail() {
   const { id } = useParams()
   const [incidentState, reloadIncident] = useApiResource<Incident>(`/api/incidents/${id}`)
   const [shelterState, reloadShelters] = useApiResource<Shelter[]>('/api/shelters')
   const [responderState, reloadResponders] = useApiResource<Responder[]>('/api/responders')
+  const [historyState, reloadHistory] = useApiResource<AuditEntry[]>(
+    `/api/audit?entity_type=incident&entity_id=${id}`,
+  )
 
   function refreshAll() {
     reloadIncident()
     reloadShelters()
     reloadResponders()
+    reloadHistory()
   }
 
   if (incidentState.kind === 'loading') {
@@ -60,7 +59,7 @@ export default function IncidentDetail() {
             <h2>
               {typeLabels[incident.type]} at {incident.location}
             </h2>
-            <p className="panel-note">Reported {formatReportedAt(incident.reported_at)}</p>
+            <p className="panel-note">Reported {formatDateTime(incident.reported_at)}</p>
           </div>
           <span className={`status status-${incident.status}`}>{statusLabels[incident.status]}</span>
         </div>
@@ -110,6 +109,8 @@ export default function IncidentDetail() {
         responders={responders}
         onChanged={refreshAll}
       />
+
+      <IncidentHistory state={historyState} />
     </>
   )
 }

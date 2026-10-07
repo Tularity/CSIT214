@@ -15,3 +15,11 @@ export const statusLabels: Record<Incident['status'], string> = {
   in_progress: 'In progress',
   resolved: 'Resolved',
 }
+
+export const actionLabels: Record<string, string> = {
+  register: 'Registered',
+  assess: 'Assessed',
+  'assign-shelter': 'Shelter assigned',
+  'assign-responder': 'Responder dispatched',
+  resolve: 'Resolved',
+}

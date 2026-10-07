@@ -42,3 +42,34 @@ export type Responder = {
   skill: string
   status: 'available' | 'assigned' | 'off_duty'
 }
+
+export type ShelterOccupancy = {
+  id: number
+  name: string
+  capacity_total: number
+  capacity_used: number
+  occupancy_percent: number
+}
+
+export type Dashboard = {
+  incidents_total: number
+  incidents_open: number
+  incidents_by_status: Record<IncidentStatus, number>
+  incidents_by_band: Record<PriorityBand, number>
+  shelters: ShelterOccupancy[]
+  capacity_total: number
+  capacity_used: number
+  occupancy_percent: number
+  responders_available: number
+  responders_by_status: Record<Responder['status'], number>
+}
+
+export type AuditEntry = {
+  id: number
+  at: string
+  actor: string
+  action: string
+  entity_type: string
+  entity_id: number
+  detail: string
+}

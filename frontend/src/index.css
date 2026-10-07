@@ -486,3 +486,125 @@ code {
   line-height: 1;
   cursor: pointer;
 }
+
+/* Meter fills are status colours, validated together for colour-vision
+   deficiency; each meter also states its level in words. */
+.meters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.meter-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.92rem;
+}
+
+.meter-name {
+  font-weight: 600;
+}
+
+.meter-figures {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.meter-state {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.meter {
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  border-radius: 5px;
+}
+
+.meter-room {
+  background: #dbe7f5;
+}
+
+.meter-room .meter-fill {
+  background: #2167b0;
+}
+
+.meter-filling {
+  background: #f5e6cc;
+}
+
+.meter-filling .meter-fill {
+  background: #a86400;
+}
+
+.meter-full {
+  background: #f6d9e1;
+}
+
+.meter-full .meter-fill {
+  background: #c42c55;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 1rem;
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.kpi-label {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.kpi-hero .kpi-value {
+  font-size: 3rem;
+}
+
+.kpi-note {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.75rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.tally-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.tally-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  min-width: 1.5ch;
+  text-align: right;
+}

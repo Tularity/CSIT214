@@ -47,9 +47,27 @@ Shelters, Responders and Activity log. Every list needs three states, not just
 the populated one: loading, empty, and failed to load. Priority bands are shown
 as colour **and** text, never colour alone.
 
+## Running with Docker
+
+Needs only Docker with the Compose plugin; Go and Node are not required.
+
+```sh
+docker compose up --build
+```
+
+Open http://localhost:8080. The image builds the client, embeds it in the Go
+server and runs both from one container. On first start the database is created
+in a named volume and filled with the sample data.
+
+| Task | Command |
+| --- | --- |
+| Use another port | `CSIT214_PORT=9090 docker compose up --build` |
+| Stop, keeping the data | `docker compose down` |
+| Start again from the sample data | `docker compose down -v` then `docker compose up` |
+
 ## Running in development
 
-Go 1.23 or newer and Node 20 or newer. There is no database server to install:
+Go 1.23 or newer and Node 22 or newer. There is no database server to install:
 the backend keeps its data in a local SQLite file.
 
 **Backend**
@@ -72,6 +90,8 @@ npm run dev                               # http://localhost:5173
 ```
 
 The dev server proxies `/api` to the backend, so start the backend first.
+Opening the backend's own port in a browser shows a short notice instead of the
+interface until the client has been built into it; the Docker image always has.
 
 ## Configuration
 
@@ -80,7 +100,7 @@ variables set at all.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `PORT` | `8080` | Port the API listens on |
+| `PORT` | `8080` | Port the server listens on |
 | `CSIT214_DB_PATH` | `data.db` | SQLite file location |
 | `CSIT214_SEED_PATH` | `seed/seed.sql`, then `../seed/seed.sql` | Sample data used when the database is empty |
 | `CSIT214_API_URL` | `http://localhost:8080` | Proxy target for the frontend dev server |
@@ -105,11 +125,13 @@ frontend converts to local time for display.
 | `POST` | `/api/incidents/{id}/resolve` | Moves `status` to `resolved`, releases the shelter capacity and returns the responder to `available` |
 | `GET` | `/api/shelters` | Shelters including remaining capacity |
 | `GET` | `/api/responders` | Responders and their current status |
-| `GET` | `/api/audit` | Audit entries, newest first |
+| `GET` | `/api/audit` | Audit entries, newest first. Optional `entity_type`, `entity_id` and `limit` (1–1000, default 200) |
 | `GET` | `/api/dashboard` | Counts per status, counts per priority band, shelter occupancy, number of available responders |
 
-Every write operation appends a row to `audit`. The client asked for this
-explicitly, so it is not optional.
+Every write operation appends a row to `audit` in the same transaction as the
+change itself. The client asked for this explicitly, so it is not optional.
+There is no sign-in in the prototype: a request may name the operator in an
+`X-Actor` header, otherwise the entry is recorded against `duty.officer`.
 
 ### Incident fields
 
@@ -168,3 +190,12 @@ frontend shows the message as it arrives and does not rewrite it.
 | Shelter does not have enough remaining capacity | 409 | `Shelter has only N places remaining` |
 | Responder is not available | 409 | `Responder is not available` |
 | Status skips a step, for example resolving a registered incident | 409 | `Incident must be assessed first` |
+
+Other replies follow the same shape: `400` for an unknown incident `type`, a
+malformed body or id; `404` for an incident, shelter or responder that does not
+exist; `409` for a step that has already happened, such as assessing twice or
+resolving a resolved incident.
+
+A shelter is optional: an incident may be dispatched or resolved straight after
+assessment, as a medical call often needs no shelter. Resolving releases the
+incident's shelter places and returns its responder to `available`.

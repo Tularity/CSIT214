@@ -28,5 +28,8 @@ func (a *API) Routes() *http.ServeMux {
 	mux.HandleFunc("GET /api/responders", a.ListResponders)
 	mux.HandleFunc("GET /api/audit", a.ListAudit)
 	mux.HandleFunc("GET /api/dashboard", a.Dashboard)
+	mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
+		writeError(w, http.StatusNotFound, "No such API route")
+	})
 	return mux
 }

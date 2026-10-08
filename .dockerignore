@@ -1,0 +1,7 @@
+.git
+**/node_modules
+frontend/dist
+backend/web/dist/*
+!backend/web/dist/.gitkeep
+**/*.db
+bin

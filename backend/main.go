@@ -12,6 +12,7 @@ import (
 
 	"github.com/Tularity/CSIT214/backend/db"
 	"github.com/Tularity/CSIT214/backend/handlers"
+	"github.com/Tularity/CSIT214/backend/web"
 )
 
 const defaultAddr = ":8080"
@@ -23,9 +24,13 @@ func main() {
 	}
 	defer store.Close()
 
+	mux := http.NewServeMux()
+	mux.Handle("/api/", handlers.New(store).Routes())
+	mux.Handle("/", web.Handler())
+
 	server := &http.Server{
 		Addr:              listenAddr(),
-		Handler:           handlers.New(store).Routes(),
+		Handler:           mux,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

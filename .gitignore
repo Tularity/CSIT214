@@ -5,9 +5,13 @@ backend/data.db-wal
 backend/backend
 *.test
 
+# Client build, and its copy embedded into the server
+frontend/dist/
+backend/web/dist/*
+!backend/web/dist/.gitkeep
+
 # Node
 node_modules/
-dist/
 .vite/
 npm-debug.log*
 

@@ -1,0 +1,15 @@
+# One container serves both the API and the built client on port 8080.
+# The database lives in the named volume, so it survives restarts;
+# `docker compose down -v` deletes it and the sample data loads again.
+services:
+  app:
+    build: .
+    image: csit214:latest
+    ports:
+      - "${CSIT214_PORT:-8080}:8080"
+    volumes:
+      - data:/data
+    restart: unless-stopped
+
+volumes:
+  data:

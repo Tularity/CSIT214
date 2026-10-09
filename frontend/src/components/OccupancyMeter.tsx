@@ -3,6 +3,7 @@ type OccupancyMeterProps = {
   used: number
   total: number
   percent: number
+  compact?: boolean
 }
 
 function occupancyLevel(percent: number): { level: 'room' | 'filling' | 'full'; label: string } {
@@ -12,18 +13,25 @@ function occupancyLevel(percent: number): { level: 'room' | 'filling' | 'full'; 
   return { level: 'room', label: 'Room available' }
 }
 
-export default function OccupancyMeter({ name, used, total, percent }: OccupancyMeterProps) {
+export default function OccupancyMeter({ name, used, total, percent, compact = false }: OccupancyMeterProps) {
   const { level, label } = occupancyLevel(percent)
   const summary = `${name}: ${used} of ${total} places used (${percent}%), ${label.toLowerCase()}`
 
   return (
     <div className="meter-row" title={summary}>
-      <div className="meter-heading">
-        <span className="meter-name">{name}</span>
-        <span className="meter-figures">
-          {used} / {total} · <span className={`meter-state meter-state-${level}`}>{label}</span>
-        </span>
-      </div>
+      {compact ? (
+        <div className="meter-heading">
+          <span className={`meter-state meter-state-${level}`}>{label}</span>
+          <span className="meter-figures">{percent}%</span>
+        </div>
+      ) : (
+        <div className="meter-heading">
+          <span className="meter-name">{name}</span>
+          <span className="meter-figures">
+            {used} / {total} · <span className={`meter-state meter-state-${level}`}>{label}</span>
+          </span>
+        </div>
+      )}
       <div
         className={`meter meter-${level}`}
         role="meter"

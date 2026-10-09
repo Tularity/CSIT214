@@ -656,3 +656,20 @@ code {
 .timeline-detail {
   font-size: 0.92rem;
 }
+
+.meter-column {
+  width: 30%;
+  min-width: 11rem;
+}
+
+.status-responder-available {
+  border-color: #a8d3ba;
+  background: var(--ok-surface);
+  color: var(--ok);
+}
+
+.status-responder-assigned {
+  border-color: #9dc0da;
+  background: #eef5fa;
+  color: var(--accent);
+}

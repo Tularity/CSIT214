@@ -72,13 +72,16 @@ export default function NewIncident() {
       <h2>Register an incident</h2>
       <p className="panel-note">
         The priority is worked out by the system from severity, people affected and whether
-        vulnerable people are involved.
+        vulnerable people are involved. Fields marked <span className="required">*</span> are
+        required.
       </p>
 
       {/* noValidate: the server's validation wording is the one the operator should see. */}
       <form className="form" onSubmit={submit} noValidate>
         <label className="field">
-          <span className="field-label">Type</span>
+          <span className="field-label">
+            Type <span className="required" aria-hidden="true">*</span>
+          </span>
           <select value={values.type} onChange={(event) => update('type', event.target.value as IncidentType)}>
             {Object.entries(typeLabels).map(([value, label]) => (
               <option key={value} value={value}>
@@ -89,17 +92,23 @@ export default function NewIncident() {
         </label>
 
         <label className="field">
-          <span className="field-label">Location</span>
+          <span className="field-label">
+            Location <span className="required" aria-hidden="true">*</span>
+          </span>
           <input
             type="text"
             value={values.location}
             placeholder="Street address or landmark"
+            aria-required="true"
+            maxLength={120}
             onChange={(event) => update('location', event.target.value)}
           />
         </label>
 
         <label className="field">
-          <span className="field-label">Description</span>
+          <span className="field-label">
+            Description <span className="field-hint">optional</span>
+          </span>
           <textarea
             rows={3}
             value={values.description}
@@ -110,17 +119,22 @@ export default function NewIncident() {
 
         <div className="field-row">
           <label className="field">
-            <span className="field-label">People affected</span>
+            <span className="field-label">
+              People affected <span className="required" aria-hidden="true">*</span>
+            </span>
             <input
               type="number"
               inputMode="numeric"
               value={values.peopleAffected}
+              aria-required="true"
               onChange={(event) => update('peopleAffected', event.target.value)}
             />
           </label>
 
           <label className="field">
-            <span className="field-label">Severity</span>
+            <span className="field-label">
+              Severity <span className="required" aria-hidden="true">*</span>
+            </span>
             <select value={values.severity} onChange={(event) => update('severity', event.target.value)}>
               {Object.entries(severityHints).map(([value, label]) => (
                 <option key={value} value={value}>

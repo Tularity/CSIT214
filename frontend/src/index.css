@@ -724,3 +724,21 @@ code {
     animation: none;
   }
 }
+
+.required {
+  color: var(--down);
+  font-weight: 700;
+}
+
+.field-hint {
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.panel a.button {
+  color: var(--ink);
+}
+
+.panel a.button-primary {
+  color: #ffffff;
+}

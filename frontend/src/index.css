@@ -673,3 +673,54 @@ code {
   background: #eef5fa;
   color: var(--accent);
 }
+
+.load-state {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.75rem 0 0;
+  color: var(--ink-muted);
+}
+
+.load-state-empty {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.25rem;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+}
+
+.load-state-empty p {
+  margin: 0;
+}
+
+.load-state-failed {
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e7b3b3;
+  border-radius: 8px;
+  background: var(--down-surface);
+  color: var(--down);
+  font-weight: 600;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

@@ -1,11 +1,12 @@
 import { Link, useSearchParams } from 'react-router-dom'
+import { Empty, LoadFailure, Loading } from '../components/LoadStates'
 import PriorityBadge from '../components/PriorityBadge'
 import { statusLabels, typeLabels } from '../labels'
 import type { Incident } from '../types'
-import { useApiData } from '../useApiData'
+import { useApiResource } from '../useApiData'
 
 export default function Incidents() {
-  const state = useApiData<Incident[]>('/api/incidents')
+  const [state, reload] = useApiResource<Incident[]>('/api/incidents')
   const [searchParams] = useSearchParams()
   const createdId = Number(searchParams.get('created'))
 
@@ -13,7 +14,7 @@ export default function Incidents() {
     return (
       <section className="panel">
         <h2>Incidents</h2>
-        <p className="panel-note">Loading incidents…</p>
+        <Loading what="incidents" />
       </section>
     )
   }
@@ -22,7 +23,7 @@ export default function Incidents() {
     return (
       <section className="panel">
         <h2>Incidents</h2>
-        <p className="panel-error">{state.message}</p>
+        <LoadFailure message={state.message} onRetry={reload} />
       </section>
     )
   }
@@ -31,10 +32,12 @@ export default function Incidents() {
     return (
       <section className="panel">
         <h2>Incidents</h2>
-        <p className="panel-note">Nothing has been registered yet.</p>
-        <Link to="/incidents/new" className="button button-primary">
-          Register incident
-        </Link>
+        <Empty>
+          <p>Nothing has been registered yet.</p>
+          <Link to="/incidents/new" className="button button-primary">
+            Register incident
+          </Link>
+        </Empty>
       </section>
     )
   }

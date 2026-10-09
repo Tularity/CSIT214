@@ -1,23 +1,26 @@
+import { Empty, LoadFailure, Loading } from '../components/LoadStates'
 import OccupancyMeter from '../components/OccupancyMeter'
 import type { Shelter } from '../types'
-import { useApiData } from '../useApiData'
+import { useApiResource } from '../useApiData'
 
 function percentUsed(shelter: Shelter): number {
   return shelter.capacity_total === 0 ? 0 : Math.round((shelter.capacity_used / shelter.capacity_total) * 100)
 }
 
 export default function Shelters() {
-  const state = useApiData<Shelter[]>('/api/shelters')
+  const [state, reload] = useApiResource<Shelter[]>('/api/shelters')
 
   return (
     <section className="panel">
       <h2>Shelters</h2>
       <p className="panel-note">Places are reserved when an incident is placed and given back when it is resolved.</p>
 
-      {state.kind === 'loading' && <p className="panel-note">Loading shelters…</p>}
-      {state.kind === 'failed' && <p className="panel-error">{state.message}</p>}
+      {state.kind === 'loading' && <Loading what="shelters" />}
+      {state.kind === 'failed' && <LoadFailure message={state.message} onRetry={reload} />}
       {state.kind === 'ready' && state.data.length === 0 && (
-        <p className="panel-note">No shelters have been set up.</p>
+        <Empty>
+          <p>No shelters have been set up.</p>
+        </Empty>
       )}
 
       {state.kind === 'ready' && state.data.length > 0 && (

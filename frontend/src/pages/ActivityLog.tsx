@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
+import { Empty, LoadFailure, Loading } from '../components/LoadStates'
 import { formatDateTime } from '../format'
 import { actionLabels } from '../labels'
 import type { AuditEntry } from '../types'
-import { useApiData } from '../useApiData'
+import { useApiResource } from '../useApiData'
 
 function recordLink(entry: AuditEntry) {
   if (entry.entity_type === 'incident') {
@@ -12,7 +13,7 @@ function recordLink(entry: AuditEntry) {
 }
 
 export default function ActivityLog() {
-  const state = useApiData<AuditEntry[]>('/api/audit')
+  const [state, reload] = useApiResource<AuditEntry[]>('/api/audit')
 
   return (
     <section className="panel">
@@ -21,10 +22,12 @@ export default function ActivityLog() {
         Every change made through the system, newest first. Entries cannot be edited or removed.
       </p>
 
-      {state.kind === 'loading' && <p className="panel-note">Loading the log…</p>}
-      {state.kind === 'failed' && <p className="panel-error">{state.message}</p>}
+      {state.kind === 'loading' && <Loading what="the log" />}
+      {state.kind === 'failed' && <LoadFailure message={state.message} onRetry={reload} />}
       {state.kind === 'ready' && state.data.length === 0 && (
-        <p className="panel-note">Nothing has been recorded yet.</p>
+        <Empty>
+          <p>Nothing has been recorded yet.</p>
+        </Empty>
       )}
 
       {state.kind === 'ready' && state.data.length > 0 && (

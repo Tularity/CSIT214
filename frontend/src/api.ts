@@ -1,12 +1,24 @@
+const unreachable = 'The server cannot be reached. Check that it is running, then try again.'
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(path, {
-    ...init,
-    headers: { Accept: 'application/json', ...init.headers },
-  })
+  let response: Response
+  try {
+    response = await fetch(path, {
+      ...init,
+      headers: { Accept: 'application/json', ...init.headers },
+    })
+  } catch {
+    throw new Error(unreachable)
+  }
   const body: unknown = await response.json().catch(() => null)
 
   if (!response.ok) {
-    throw new Error(errorMessage(body) ?? `Request failed with status ${response.status}`)
+    const message = errorMessage(body)
+    if (message) throw new Error(message)
+    // Without an {"error": ...} body a gateway error means the development
+    // proxy could not reach the backend at all.
+    if (response.status >= 502 && response.status <= 504) throw new Error(unreachable)
+    throw new Error(`Request failed with status ${response.status}`)
   }
   return body as T
 }

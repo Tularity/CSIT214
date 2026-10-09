@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import IncidentActions from '../components/IncidentActions'
+import { LoadFailure, Loading } from '../components/LoadStates'
 import IncidentHistory from '../components/IncidentHistory'
 import PriorityBadge from '../components/PriorityBadge'
 import { formatDateTime } from '../format'
@@ -26,7 +27,7 @@ export default function IncidentDetail() {
   if (incidentState.kind === 'loading') {
     return (
       <section className="panel">
-        <p className="panel-note">Loading incident…</p>
+        <Loading what="the incident" />
       </section>
     )
   }
@@ -35,7 +36,7 @@ export default function IncidentDetail() {
     return (
       <section className="panel">
         <h2>Incident {id}</h2>
-        <p className="panel-error">{incidentState.message}</p>
+        <LoadFailure message={incidentState.message} onRetry={refreshAll} />
         <Link to="/incidents">Back to incidents</Link>
       </section>
     )

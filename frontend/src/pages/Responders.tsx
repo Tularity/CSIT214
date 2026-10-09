@@ -1,5 +1,6 @@
+import { Empty, LoadFailure, Loading } from '../components/LoadStates'
 import type { Responder } from '../types'
-import { useApiData } from '../useApiData'
+import { useApiResource } from '../useApiData'
 
 const statusLabels: Record<Responder['status'], string> = {
   available: 'Available',
@@ -8,7 +9,7 @@ const statusLabels: Record<Responder['status'], string> = {
 }
 
 export default function Responders() {
-  const state = useApiData<Responder[]>('/api/responders')
+  const [state, reload] = useApiResource<Responder[]>('/api/responders')
 
   return (
     <section className="panel">
@@ -18,10 +19,12 @@ export default function Responders() {
         resolved.
       </p>
 
-      {state.kind === 'loading' && <p className="panel-note">Loading responders…</p>}
-      {state.kind === 'failed' && <p className="panel-error">{state.message}</p>}
+      {state.kind === 'loading' && <Loading what="responders" />}
+      {state.kind === 'failed' && <LoadFailure message={state.message} onRetry={reload} />}
       {state.kind === 'ready' && state.data.length === 0 && (
-        <p className="panel-note">No responders are on the roster.</p>
+        <Empty>
+          <p>No responders are on the roster.</p>
+        </Empty>
       )}
 
       {state.kind === 'ready' && state.data.length > 0 && (

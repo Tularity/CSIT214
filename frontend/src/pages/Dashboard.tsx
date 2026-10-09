@@ -1,20 +1,21 @@
 import { Link } from 'react-router-dom'
+import { LoadFailure, Loading } from '../components/LoadStates'
 import OccupancyMeter from '../components/OccupancyMeter'
 import { statusLabels } from '../labels'
 import type { Dashboard as DashboardData, IncidentStatus, PriorityBand } from '../types'
-import { useApiData } from '../useApiData'
+import { useApiResource } from '../useApiData'
 
 const statusOrder: IncidentStatus[] = ['registered', 'assessed', 'assigned', 'in_progress', 'resolved']
 const bandOrder: PriorityBand[] = ['Critical', 'High', 'Medium', 'Low']
 
 export default function Dashboard() {
-  const state = useApiData<DashboardData>('/api/dashboard')
+  const [state, reload] = useApiResource<DashboardData>('/api/dashboard')
 
   if (state.kind === 'loading') {
     return (
       <section className="panel">
         <h2>Operations overview</h2>
-        <p className="panel-note">Loading the latest figures…</p>
+        <Loading what="the latest figures" />
       </section>
     )
   }
@@ -23,7 +24,7 @@ export default function Dashboard() {
     return (
       <section className="panel">
         <h2>Operations overview</h2>
-        <p className="panel-error">{state.message}</p>
+        <LoadFailure message={state.message} onRetry={reload} />
       </section>
     )
   }

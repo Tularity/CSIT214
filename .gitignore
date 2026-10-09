@@ -15,8 +15,10 @@ node_modules/
 .vite/
 npm-debug.log*
 
-# Build output
-bin/
+# Database created beside a release binary
+bin/*.db
+bin/*.db-shm
+bin/*.db-wal
 
 # Editors and operating system
 .DS_Store

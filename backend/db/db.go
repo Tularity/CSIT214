@@ -20,7 +20,9 @@ type Store struct {
 	db *sql.DB
 }
 
-func Open(path string) (*Store, error) {
+// Open creates the schema if needed and, when the database is empty, loads
+// seedPath; an empty seedPath means the usual locations are searched.
+func Open(path, seedPath string) (*Store, error) {
 	if path == "" {
 		path = DefaultPath
 	}
@@ -43,7 +45,7 @@ func Open(path string) (*Store, error) {
 		return nil, fmt.Errorf("apply schema: %w", err)
 	}
 
-	if err := seedIfEmpty(database); err != nil {
+	if err := seedIfEmpty(database, seedPath); err != nil {
 		database.Close()
 		return nil, err
 	}
@@ -55,7 +57,7 @@ func (s *Store) Close() error {
 	return s.db.Close()
 }
 
-func seedIfEmpty(database *sql.DB) error {
+func seedIfEmpty(database *sql.DB, seedPath string) error {
 	var incidents int
 	if err := database.QueryRow(`SELECT COUNT(*) FROM incidents`).Scan(&incidents); err != nil {
 		return fmt.Errorf("count incidents: %w", err)
@@ -64,7 +66,7 @@ func seedIfEmpty(database *sql.DB) error {
 		return nil
 	}
 
-	path, err := findSeedFile()
+	path, err := findSeedFile(seedPath)
 	if err != nil {
 		log.Printf("skipping seed data: %v", err)
 		return nil
@@ -84,10 +86,10 @@ func seedIfEmpty(database *sql.DB) error {
 
 // findSeedFile looks beside the working directory first so that both `go run .`
 // from backend and a binary started from the repository root find the same file.
-func findSeedFile() (string, error) {
-	if configured := os.Getenv("CSIT214_SEED_PATH"); configured != "" {
+func findSeedFile(configured string) (string, error) {
+	if configured != "" {
 		if _, err := os.Stat(configured); err != nil {
-			return "", fmt.Errorf("CSIT214_SEED_PATH=%s is not readable: %w", configured, err)
+			return "", fmt.Errorf("seed file %s is not readable: %w", configured, err)
 		}
 		return configured, nil
 	}

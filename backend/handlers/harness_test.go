@@ -16,9 +16,7 @@ import (
 func newTestServer(t *testing.T) *httptest.Server {
 	t.Helper()
 
-	t.Setenv("CSIT214_SEED_PATH", filepath.Join("..", "..", "seed", "seed.sql"))
-
-	store, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
+	store, err := db.Open(filepath.Join(t.TempDir(), "test.db"), filepath.Join("..", "..", "seed", "seed.sql"))
 	if err != nil {
 		t.Fatalf("open test database: %v", err)
 	}

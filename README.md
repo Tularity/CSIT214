@@ -27,6 +27,8 @@ needs, rather than nine that are half built.
 | `backend/` | Go API server, standard library HTTP, SQLite via `modernc.org/sqlite` |
 | `frontend/` | React and TypeScript client, built with Vite |
 | `seed/` | Sample data loaded into an empty database on first start |
+| `bin/` | Ready-built programs for Windows, macOS and Linux |
+| `scripts/` | Release build script for `bin/` |
 
 ## Screens
 
@@ -65,6 +67,44 @@ in a named volume and filled with the sample data.
 | Stop, keeping the data | `docker compose down` |
 | Start again from the sample data | `docker compose down -v` then `docker compose up` |
 
+## Running without Docker
+
+`bin/` holds ready-built single-file programs with the interface and the sample
+data handling built in. Nothing needs to be installed and no network access is
+used.
+
+| System | File |
+| --- | --- |
+| Windows | `bin/csit214-windows.exe` |
+| macOS on Apple silicon (M1 and later) | `bin/csit214-macos-apple-silicon` |
+| macOS on Intel | `bin/csit214-macos-intel` |
+| Linux | `bin/csit214-linux` |
+
+Double-click the file for your system, or run it from a terminal. A browser
+opens at http://localhost:8080; if it does not, open that address yourself. The
+window that appears is the server: close it, or press Ctrl+C, to stop.
+
+The database is created next to the program as `bin/data.db` and filled from
+`seed/seed.sql`, so keep the repository's folder layout. Delete `bin/data.db` to
+start again from the sample data.
+
+The programs are not signed, so the operating system may ask first:
+
+- **Windows** shows "Windows protected your PC": choose *More info*, then *Run anyway*.
+- **macOS** may refuse a file downloaded as a ZIP: right-click it, choose *Open*,
+  then *Open* again. Alternatively run
+  `xattr -d com.apple.quarantine bin/csit214-macos-*` once. A `git clone` is not affected.
+- **Linux** may need `chmod +x bin/csit214-linux` if the execute bit was lost.
+
+If port 8080 is taken, start it from a terminal with another port, for example
+`PORT=9090 bin/csit214-linux` (on Windows: `set PORT=9090` then the `.exe`).
+
+To rebuild the four files after a change (needs Go and Node):
+
+```sh
+./scripts/build-binaries.sh
+```
+
 ## Running in development
 
 Go 1.23 or newer and Node 22 or newer. There is no database server to install:
@@ -101,8 +141,9 @@ variables set at all.
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` | `8080` | Port the server listens on |
-| `CSIT214_DB_PATH` | `data.db` | SQLite file location |
-| `CSIT214_SEED_PATH` | `seed/seed.sql`, then `../seed/seed.sql` | Sample data used when the database is empty |
+| `CSIT214_DB_PATH` | `data.db` in the working directory; next to the program for the `bin/` builds | SQLite file location |
+| `CSIT214_SEED_PATH` | `seed/seed.sql`, then `../seed/seed.sql`; `../seed/seed.sql` beside the program for the `bin/` builds | Sample data used when the database is empty |
+| `CSIT214_OPEN_BROWSER` | on for the `bin/` builds | Set to `0` to stop a `bin/` build opening a browser |
 | `CSIT214_API_URL` | `http://localhost:8080` | Proxy target for the frontend dev server |
 
 ## API

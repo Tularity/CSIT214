@@ -32,22 +32,63 @@ needs, rather than nine that are half built.
 
 ## Screens
 
-| Capability area | Screens | In the prototype |
-| --- | --- | --- |
-| Incident registration | New incident form | Yes |
-| Assessment and prioritisation | Incident list, incident detail | Yes |
-| Shelter capacity | Shelter list, shelter detail | List only |
-| Responder dispatch | Responder list, roster | List only |
-| Resource allocation | Equipment inventory, allocation request | No |
-| Progress tracking | Incident timeline | Yes |
-| Operations dashboard | Dashboard | Yes |
-| Reporting | Report builder | No |
-| Audit trail | Activity log | Yes, read only |
+| Capability area | Screens in the design |
+| --- | --- |
+| Incident registration | New incident form |
+| Assessment and prioritisation | Incident list, incident detail |
+| Shelter capacity | Shelter list, shelter detail |
+| Responder dispatch | Responder list, roster |
+| Resource allocation | Equipment inventory, allocation request |
+| Progress tracking | Incident timeline |
+| Operations dashboard | Dashboard |
+| Reporting | Report builder |
+| Audit trail | Activity log |
 
 The shell is a header plus left navigation holding Dashboard, Incidents,
 Shelters, Responders and Activity log. Every list needs three states, not just
 the populated one: loading, empty, and failed to load. Priority bands are shown
 as colour **and** text, never colour alone.
+
+## Feature coverage
+
+What the full design contains against what the prototype does. Each feature is
+in exactly one column.
+
+| Feature | Implemented | Partly | Designed only | Out of scope |
+| --- | :---: | :---: | :---: | :---: |
+| Register an incident, with the client's validation rules | ✓ | | | |
+| Priority score and band worked out by the system | ✓ | | | |
+| Incident list in priority order | ✓ | | | |
+| Incident detail with only the steps its status allows | ✓ | | | |
+| Assessment step | | ✓ | | |
+| Place people in a shelter, refusing one without room | ✓ | | | |
+| Shelter list with remaining places | ✓ | | | |
+| Shelter detail: adjust capacity, close a shelter | | | ✓ | |
+| Dispatch an available responder | ✓ | | | |
+| Responder list with availability | ✓ | | | |
+| Roster and shifts | | | ✓ | |
+| Resolve, releasing shelter places and the responder | ✓ | | | |
+| Equipment inventory and allocation requests | | | ✓ | |
+| Incident timeline | ✓ | | | |
+| Operations dashboard | ✓ | | | |
+| Report builder and export | | | ✓ | |
+| Activity log of every change, read only | ✓ | | | |
+| Sign-in, roles and permissions | | | | ✓ |
+| Messages to residents and responders | | | | ✓ |
+
+**Partly:** assessment moves the incident on and is logged, but records no
+assessment notes and does not re-score the incident.
+
+**Out of scope:** without sign-in, the activity log names the operator from the
+`X-Actor` header or records `duty.officer`.
+
+Every implemented row on the end-to-end path, and each validation rule, is
+exercised by `backend/handlers/acceptance_test.go`:
+
+```sh
+cd backend
+go test -v -run Acceptance ./handlers/
+```
 
 ## Running with Docker
 

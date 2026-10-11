@@ -20,6 +20,17 @@ The council asked for nine capability areas. The interface design covers all
 nine. The runnable prototype implements only the subset one working chain
 needs, rather than nine that are half built.
 
+The prototype is a demonstration, not a system to run an emergency on:
+
+- It runs on one machine for one operator at a time, with no sign-in.
+- Its data is the fictional sample set; nothing is imported from, or sent to,
+  any council system, and no message reaches a resident or a responder.
+- Times are stored in UTC and shown in the browser's own time zone.
+- A shelter's capacity is a single number of places; it does not model rooms,
+  accessibility or special needs.
+- Priority uses the agreed formula only. Real triage would add the judgement of
+  the person assessing the incident.
+
 ## Layout
 
 | Path | Contents |

@@ -49,7 +49,31 @@ Shelters, Responders and Activity log. Every list needs three states, not just
 the populated one: loading, empty, and failed to load. Priority bands are shown
 as colour **and** text, never colour alone.
 
-## Feature coverage
+## Demonstration walkthrough
+
+About five minutes, starting from fresh sample data (`docker compose down -v`,
+or delete `bin/data.db`). Each step names what to point out.
+
+1. **Dashboard.** Six open incidents, four responders free, Northbay Primary
+   School Gym nearly full at 38 of 40 places. Keep these numbers in mind.
+2. **Incidents.** The list is already in priority order. Explain one score out
+   loud: Lowtide Crescent is severity 4 (40) + 18 people (18) + vulnerable
+   people (20) = 78, Critical.
+3. **Register incident.** Submit with the location empty to show the rule
+   coming back from the server. Then enter a storm at *Bayside Caravan Park*,
+   10 people, severity 2, vulnerable people ticked. It scores 20 + 10 + 20 = 50,
+   High, and appears highlighted between the 74 and the 45.
+4. **Open it and assess it.** Before assessing, only *Assess* is offered.
+5. **Assign shelter.** Pick Northbay Primary School Gym first: it is refused
+   with "Shelter has only 2 places remaining" and nothing changes. Then pick
+   Harbour View Community Hall.
+6. **Dispatch responder.** Pick someone marked as on another job to show
+   "Responder is not available", then pick an available responder.
+7. **Resolve.** The history at the bottom of the page now shows all five steps
+   with who and when.
+8. **Dashboard again.** The places and the responder have come back; resolved
+   is up by one. Finish on the **Activity log** to show nothing can be edited.
+
 
 What the full design contains against what the prototype does. Each feature is
 in exactly one column.

@@ -107,7 +107,11 @@ func (s *Store) AssignShelter(ctx context.Context, actor string, id, shelterID i
 		}
 
 		if remaining := total - used; remaining < incident.PeopleAffected {
-			return &ConflictError{fmt.Sprintf("Shelter has only %d places remaining", remaining)}
+			alternatives, err := sheltersWithRoom(ctx, tx, incident.PeopleAffected)
+			if err != nil {
+				return err
+			}
+			return &ShelterFullError{Remaining: remaining, Alternatives: alternatives}
 		}
 
 		if _, err := tx.ExecContext(ctx,
@@ -123,6 +127,34 @@ func (s *Store) AssignShelter(ctx context.Context, actor string, id, shelterID i
 		return recordAudit(ctx, tx, at, actor, "assign-shelter", "incident", id,
 			fmt.Sprintf("Assigned shelter %d (%s) for %d people", shelterID, name, incident.PeopleAffected))
 	})
+}
+
+// sheltersWithRoom lists every shelter that can take the whole group, roomiest
+// first. It runs inside the refused transaction so the list matches the
+// capacity that caused the refusal.
+func sheltersWithRoom(ctx context.Context, tx *sql.Tx, people int) ([]models.ShelterAlternative, error) {
+	rows, err := tx.QueryContext(ctx,
+		`SELECT id, name, capacity_total - capacity_used AS remaining
+		   FROM shelters
+		  WHERE capacity_total - capacity_used >= ?
+		  ORDER BY remaining DESC, id`, people)
+	if err != nil {
+		return nil, fmt.Errorf("find shelters with room: %w", err)
+	}
+	defer rows.Close()
+
+	alternatives := []models.ShelterAlternative{}
+	for rows.Next() {
+		var alternative models.ShelterAlternative
+		if err := rows.Scan(&alternative.ID, &alternative.Name, &alternative.CapacityRemaining); err != nil {
+			return nil, fmt.Errorf("find shelters with room: %w", err)
+		}
+		alternatives = append(alternatives, alternative)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("find shelters with room: %w", err)
+	}
+	return alternatives, nil
 }
 
 func (s *Store) AssignResponder(ctx context.Context, actor string, id, responderID int64) (models.Incident, error) {

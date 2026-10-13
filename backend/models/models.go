@@ -62,3 +62,9 @@ type Dashboard struct {
 	RespondersAvailable int                `json:"responders_available"`
 	RespondersByStatus  map[string]int     `json:"responders_by_status"`
 }
+
+type ShelterAlternative struct {
+	ID                int64  `json:"id"`
+	Name              string `json:"name"`
+	CapacityRemaining int    `json:"capacity_remaining"`
+}

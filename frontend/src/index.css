@@ -742,3 +742,31 @@ code {
 .panel a.button-primary {
   color: #ffffff;
 }
+
+.alternatives {
+  padding: 0.85rem 1rem;
+  border: 1px solid #9dc0da;
+  border-radius: 6px;
+  background: #eef5fa;
+}
+
+.alternatives-title {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+}
+
+.alternatives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alternatives-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}

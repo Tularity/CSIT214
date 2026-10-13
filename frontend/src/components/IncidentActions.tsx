@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { postJSON } from '../api'
+import { ApiError, postJSON } from '../api'
 import { useNotify } from '../notices'
-import type { Incident, Responder, Shelter } from '../types'
+import type { Incident, Responder, Shelter, ShelterAlternative } from '../types'
+import ShelterAlternatives from './ShelterAlternatives'
 
 type IncidentActionsProps = {
   incident: Incident
@@ -9,6 +10,14 @@ type IncidentActionsProps = {
   responders: Responder[]
   onChanged: () => void
 }
+
+// TODO(CR-01): stand-in until cr-01-backend sends alternatives with the 409.
+// Copied from the response format agreed on 13 October; delete once merged.
+const agreedExample: ShelterAlternative[] = [
+  { id: 4, name: 'Riverside Civic Centre', capacity_remaining: 200 },
+  { id: 1, name: 'Harbour View Community Hall', capacity_remaining: 96 },
+  { id: 3, name: 'Pelican Point Surf Club', capacity_remaining: 28 },
+]
 
 const responderStatusNotes: Record<Responder['status'], string> = {
   available: '',
@@ -21,6 +30,7 @@ export default function IncidentActions({ incident, shelters, responders, onChan
   const [busy, setBusy] = useState(false)
   const [shelterId, setShelterId] = useState('')
   const [responderId, setResponderId] = useState('')
+  const [refused, setRefused] = useState<{ name: string; alternatives: ShelterAlternative[] } | null>(null)
 
   // Every shelter stays selectable: if one is short of room the backend says
   // exactly how many places are left, which is more useful than a greyed out row.
@@ -29,18 +39,30 @@ export default function IncidentActions({ incident, shelters, responders, onChan
   const chosenShelter = shelterId || String(roomyShelter?.id ?? shelters[0]?.id ?? '')
   const chosenResponder = responderId || String(freeResponder?.id ?? responders[0]?.id ?? '')
 
-  async function run(action: string, success: string, payload?: unknown) {
+  async function run(action: string, success: string, payload?: unknown): Promise<unknown> {
     setBusy(true)
     try {
       await postJSON<Incident>(`/api/incidents/${incident.id}/${action}`, payload)
       setShelterId('')
       setResponderId('')
+      setRefused(null)
       notify('success', success)
       onChanged()
+      return null
     } catch (failure) {
       notify('error', (failure as Error).message)
+      return failure
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function placeIn(id: string, name: string) {
+    const failure = await run('assign-shelter', `${incident.people_affected} people placed at ${name}.`, {
+      shelter_id: Number(id),
+    })
+    if (failure instanceof ApiError && failure.status === 409) {
+      setRefused({ name, alternatives: agreedExample })
     }
   }
 
@@ -91,17 +113,21 @@ export default function IncidentActions({ incident, shelters, responders, onChan
             <button
               className="button button-primary"
               disabled={busy || chosenShelter === ''}
-              onClick={() =>
-                run(
-                  'assign-shelter',
-                  `${incident.people_affected} people placed at ${nameOf(shelters, chosenShelter)}.`,
-                  { shelter_id: Number(chosenShelter) },
-                )
-              }
+              onClick={() => placeIn(chosenShelter, nameOf(shelters, chosenShelter))}
             >
               Assign shelter
             </button>
           </div>
+        )}
+
+        {canPlace && refused && (
+          <ShelterAlternatives
+            people={incident.people_affected}
+            refusedName={refused.name}
+            alternatives={refused.alternatives}
+            busy={busy}
+            onChoose={(alternative) => placeIn(String(alternative.id), alternative.name)}
+          />
         )}
 
         {canDispatch && (

@@ -9,6 +9,15 @@ type ShelterAlternativesProps = {
 }
 
 export default function ShelterAlternatives({ people, refusedName, alternatives, busy, onChoose }: ShelterAlternativesProps) {
+  if (alternatives.length === 0) {
+    return (
+      <div className="alternatives alternatives-none" role="region" aria-label="Shelters with room">
+        <p className="alternatives-title">No shelter has room for all {people} people at once.</p>
+        <p className="panel-note">Split the group into separate incidents, or free places by resolving others first.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="alternatives" role="region" aria-label="Shelters with room">
       <p className="alternatives-title">

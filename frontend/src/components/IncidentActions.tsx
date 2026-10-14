@@ -11,13 +11,13 @@ type IncidentActionsProps = {
   onChanged: () => void
 }
 
-// TODO(CR-01): stand-in until cr-01-backend sends alternatives with the 409.
-// Copied from the response format agreed on 13 October; delete once merged.
-const agreedExample: ShelterAlternative[] = [
-  { id: 4, name: 'Riverside Civic Centre', capacity_remaining: 200 },
-  { id: 1, name: 'Harbour View Community Hall', capacity_remaining: 96 },
-  { id: 3, name: 'Pelican Point Surf Club', capacity_remaining: 28 },
-]
+function alternativesIn(body: unknown): ShelterAlternative[] | null {
+  if (body && typeof body === 'object' && 'alternatives' in body) {
+    const alternatives = (body as { alternatives: unknown }).alternatives
+    if (Array.isArray(alternatives)) return alternatives as ShelterAlternative[]
+  }
+  return null
+}
 
 const responderStatusNotes: Record<Responder['status'], string> = {
   available: '',
@@ -61,9 +61,8 @@ export default function IncidentActions({ incident, shelters, responders, onChan
     const failure = await run('assign-shelter', `${incident.people_affected} people placed at ${name}.`, {
       shelter_id: Number(id),
     })
-    if (failure instanceof ApiError && failure.status === 409) {
-      setRefused({ name, alternatives: agreedExample })
-    }
+    const alternatives = failure instanceof ApiError ? alternativesIn(failure.body) : null
+    setRefused(alternatives ? { name, alternatives } : null)
   }
 
   function nameOf<T extends { id: number; name: string }>(records: T[], id: string): string {

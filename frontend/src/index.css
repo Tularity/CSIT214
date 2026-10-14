@@ -770,3 +770,13 @@ code {
   justify-content: space-between;
   gap: 1rem;
 }
+
+.alternatives-none {
+  border-color: #e7b3b3;
+  background: var(--down-surface);
+}
+
+.alternatives-none .alternatives-title {
+  margin-bottom: 0.25rem;
+  color: var(--down);
+}

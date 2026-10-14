@@ -751,8 +751,13 @@ code {
 }
 
 .alternatives-title {
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.25rem;
   font-weight: 600;
+  color: var(--down);
+}
+
+.alternatives > p:not(.alternatives-title) {
+  margin: 0 0 0.6rem;
 }
 
 .alternatives-list {
@@ -776,7 +781,6 @@ code {
   background: var(--down-surface);
 }
 
-.alternatives-none .alternatives-title {
-  margin-bottom: 0.25rem;
-  color: var(--down);
+.alternatives-none > p:last-child {
+  margin-bottom: 0;
 }

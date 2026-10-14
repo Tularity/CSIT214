@@ -30,7 +30,7 @@ export default function IncidentActions({ incident, shelters, responders, onChan
   const [busy, setBusy] = useState(false)
   const [shelterId, setShelterId] = useState('')
   const [responderId, setResponderId] = useState('')
-  const [refused, setRefused] = useState<{ name: string; alternatives: ShelterAlternative[] } | null>(null)
+  const [refused, setRefused] = useState<{ name: string; message: string; alternatives: ShelterAlternative[] } | null>(null)
 
   // Every shelter stays selectable: if one is short of room the backend says
   // exactly how many places are left, which is more useful than a greyed out row.
@@ -50,19 +50,33 @@ export default function IncidentActions({ incident, shelters, responders, onChan
       onChanged()
       return null
     } catch (failure) {
-      notify('error', (failure as Error).message)
       return failure
     } finally {
       setBusy(false)
     }
   }
 
+  async function runOrReport(action: string, success: string, payload?: unknown) {
+    const failure = await run(action, success, payload)
+    if (failure) notify('error', (failure as Error).message)
+  }
+
+  // A refusal that comes with alternatives is shown in the panel beside the
+  // shelter choice rather than as a notice: it is a question to answer, and a
+  // notice would linger after the people had been placed elsewhere.
   async function placeIn(id: string, name: string) {
     const failure = await run('assign-shelter', `${incident.people_affected} people placed at ${name}.`, {
       shelter_id: Number(id),
     })
+    if (!failure) return
+
     const alternatives = failure instanceof ApiError ? alternativesIn(failure.body) : null
-    setRefused(alternatives ? { name, alternatives } : null)
+    if (alternatives) {
+      setRefused({ name, message: (failure as Error).message, alternatives })
+    } else {
+      setRefused(null)
+      notify('error', (failure as Error).message)
+    }
   }
 
   function nameOf<T extends { id: number; name: string }>(records: T[], id: string): string {
@@ -91,7 +105,7 @@ export default function IncidentActions({ incident, shelters, responders, onChan
         {canAssess && (
           <div className="action">
             <p>Confirm the details with the caller before anything is committed to it.</p>
-            <button className="button button-primary" disabled={busy} onClick={() => run('assess', `Incident #${incident.id} assessed.`)}>
+            <button className="button button-primary" disabled={busy} onClick={() => runOrReport('assess', `Incident #${incident.id} assessed.`)}>
               Assess
             </button>
           </div>
@@ -101,7 +115,13 @@ export default function IncidentActions({ incident, shelters, responders, onChan
           <div className="action">
             <label className="field">
               <span className="field-label">Shelter for {incident.people_affected} people</span>
-              <select value={chosenShelter} onChange={(event) => setShelterId(event.target.value)}>
+              <select
+                value={chosenShelter}
+                onChange={(event) => {
+                  setShelterId(event.target.value)
+                  setRefused(null)
+                }}
+              >
                 {shelters.map((shelter) => (
                   <option key={shelter.id} value={shelter.id}>
                     {shelter.name} — {shelter.capacity_remaining} places left
@@ -123,6 +143,7 @@ export default function IncidentActions({ incident, shelters, responders, onChan
           <ShelterAlternatives
             people={incident.people_affected}
             refusedName={refused.name}
+            message={refused.message}
             alternatives={refused.alternatives}
             busy={busy}
             onChoose={(alternative) => placeIn(String(alternative.id), alternative.name)}
@@ -145,7 +166,7 @@ export default function IncidentActions({ incident, shelters, responders, onChan
               className={canPlace ? 'button' : 'button button-primary'}
               disabled={busy || chosenResponder === ''}
               onClick={() =>
-                run('assign-responder', `${nameOf(responders, chosenResponder)} dispatched.`, {
+                runOrReport('assign-responder', `${nameOf(responders, chosenResponder)} dispatched.`, {
                   responder_id: Number(chosenResponder),
                 })
               }
@@ -161,7 +182,7 @@ export default function IncidentActions({ incident, shelters, responders, onChan
             <button
               className={incident.status === 'in_progress' ? 'button button-primary' : 'button'}
               disabled={busy}
-              onClick={() => run('resolve', `Incident #${incident.id} resolved; its shelter places and responder are free again.`)}
+              onClick={() => runOrReport('resolve', `Incident #${incident.id} resolved; its shelter places and responder are free again.`)}
             >
               Resolve
             </button>

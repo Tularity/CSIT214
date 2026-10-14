@@ -22,10 +22,16 @@ func incidentID(w http.ResponseWriter, r *http.Request) (int64, bool) {
 
 func writeTransitionResult(w http.ResponseWriter, incident models.Incident, err error) {
 	var conflict *db.ConflictError
+	var full *db.ShelterFullError
 	var missing *db.NotFoundError
 	switch {
 	case err == nil:
 		writeJSON(w, http.StatusOK, incident)
+	case errors.As(err, &full):
+		writeJSON(w, http.StatusConflict, struct {
+			Error        string                      `json:"error"`
+			Alternatives []models.ShelterAlternative `json:"alternatives"`
+		}{full.Error(), full.Alternatives})
 	case errors.As(err, &conflict):
 		writeError(w, http.StatusConflict, conflict.Message)
 	case errors.As(err, &missing):

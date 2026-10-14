@@ -1,6 +1,11 @@
 package db
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/Tularity/CSIT214/backend/models"
+)
 
 var ErrNotFound = errors.New("record not found")
 
@@ -25,4 +30,16 @@ type ConflictError struct {
 
 func (e *ConflictError) Error() string {
 	return e.Message
+}
+
+// ShelterFullError is the conflict raised when a shelter cannot take everyone
+// from an incident. It carries the shelters that could, so the coordinator can
+// pick one straight away instead of trying them one by one (change CR-01).
+type ShelterFullError struct {
+	Remaining    int
+	Alternatives []models.ShelterAlternative
+}
+
+func (e *ShelterFullError) Error() string {
+	return fmt.Sprintf("Shelter has only %d places remaining", e.Remaining)
 }

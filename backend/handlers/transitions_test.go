@@ -28,7 +28,7 @@ func responderStatus(t *testing.T, responders []map[string]any, id float64) stri
 	return ""
 }
 
-func expectConflict(t *testing.T, response *http.Response, body map[string]string, want string) {
+func expectConflict(t *testing.T, response *http.Response, body map[string]any, want string) {
 	t.Helper()
 	if response.StatusCode != http.StatusConflict || body["error"] != want {
 		t.Errorf("got %d %q, want 409 %q", response.StatusCode, body["error"], want)
@@ -40,7 +40,7 @@ func expectConflict(t *testing.T, response *http.Response, body map[string]strin
 func TestShelterWithoutRoomIsRefused(t *testing.T) {
 	server := newTestServer(t)
 
-	var body map[string]string
+	var body map[string]any
 	response := send(t, server, http.MethodPost, "/api/incidents/3/assign-shelter",
 		map[string]any{"shelter_id": 2}, &body)
 	expectConflict(t, response, body, "Shelter has only 2 places remaining")
@@ -68,7 +68,7 @@ func TestStepsCannotBeSkipped(t *testing.T) {
 		{"/api/incidents/2/assign-responder", map[string]any{"responder_id": 2}, "Incident already has a responder"},
 	}
 	for _, testCase := range cases {
-		var body map[string]string
+		var body map[string]any
 		response := send(t, server, http.MethodPost, testCase.path, testCase.body, &body)
 		expectConflict(t, response, body, testCase.want)
 	}
@@ -78,7 +78,7 @@ func TestUnavailableResponderIsRefused(t *testing.T) {
 	server := newTestServer(t)
 
 	for _, responderID := range []int{1, 5} {
-		var body map[string]string
+		var body map[string]any
 		response := send(t, server, http.MethodPost, "/api/incidents/4/assign-responder",
 			map[string]any{"responder_id": responderID}, &body)
 		expectConflict(t, response, body, "Responder is not available")
@@ -100,7 +100,7 @@ func TestMissingRecordsAndBadBodiesAreReported(t *testing.T) {
 		{"/api/incidents/3/assign-shelter", map[string]any{}, http.StatusBadRequest, "shelter_id must be a positive number"},
 	}
 	for _, testCase := range cases {
-		var body map[string]string
+		var body map[string]any
 		response := send(t, server, http.MethodPost, testCase.path, testCase.body, &body)
 		if response.StatusCode != testCase.status || body["error"] != testCase.want {
 			t.Errorf("POST %s: got %d %q, want %d %q",

@@ -304,7 +304,7 @@ frontend shows the message as it arrives and does not rewrite it.
 | `location` empty or longer than 120 characters | 400 | `Location is required (max 120 characters)` |
 | `people_affected` outside 1–500 | 400 | `People affected must be between 1 and 500` |
 | `severity` outside 1–5 | 400 | `Severity must be between 1 and 5` |
-| Shelter does not have enough remaining capacity | 409 | `Shelter has only N places remaining` |
+| Shelter does not have enough remaining capacity | 409 | `Shelter has only N places remaining`, plus `alternatives` (below) |
 | Responder is not available | 409 | `Responder is not available` |
 | Status skips a step, for example resolving a registered incident | 409 | `Incident must be assessed first` |
 
@@ -312,6 +312,21 @@ Other replies follow the same shape: `400` for an unknown incident `type`, a
 malformed body or id; `404` for an incident, shelter or responder that does not
 exist; `409` for a step that has already happened, such as assessing twice or
 resolving a resolved incident.
+
+When a shelter is refused for lack of room, the 409 also lists the shelters
+that could take the whole group, roomiest first, so the operator can choose
+again without guessing. The list is empty when no shelter is large enough.
+
+```json
+{
+  "error": "Shelter has only 2 places remaining",
+  "alternatives": [
+    { "id": 4, "name": "Riverside Civic Centre", "capacity_remaining": 200 },
+    { "id": 1, "name": "Harbour View Community Hall", "capacity_remaining": 96 },
+    { "id": 3, "name": "Pelican Point Surf Club", "capacity_remaining": 28 }
+  ]
+}
+```
 
 A shelter is optional: an incident may be dispatched or resolved straight after
 assessment, as a medical call often needs no shelter. Resolving releases the

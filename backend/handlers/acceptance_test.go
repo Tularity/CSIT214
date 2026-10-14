@@ -165,7 +165,7 @@ func TestAcceptanceValidationRules(t *testing.T) {
 
 	for _, rule := range rules {
 		t.Run(rule.rule, func(t *testing.T) {
-			var body map[string]string
+			var body map[string]any
 			response := send(t, server, http.MethodPost, rule.path, rule.body, &body)
 			t.Logf("expected %d %q, got %d %q", rule.wantStatus, rule.wantError, response.StatusCode, body["error"])
 			if response.StatusCode != rule.wantStatus || body["error"] != rule.wantError {

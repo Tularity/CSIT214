@@ -180,3 +180,57 @@ func TestAcceptanceValidationRules(t *testing.T) {
 		t.Errorf("rejected requests changed the data: %d incidents, want 8", len(incidents))
 	}
 }
+
+// Change request CR-01, approved by the client on 13 October: a refused
+// placement must offer the shelters that can take the whole group, and only
+// those.
+func TestAcceptanceCR01SheltersOfferedWhenFull(t *testing.T) {
+	server := newTestServer(t)
+
+	check := func(name string, people int) (map[string]int, string) {
+		t.Helper()
+		var created map[string]any
+		send(t, server, http.MethodPost, "/api/incidents", map[string]any{
+			"type": "flood", "location": "CR-01 check: " + name, "people_affected": people, "severity": 3,
+		}, &created)
+		id := int(created["id"].(float64))
+		send(t, server, http.MethodPost, fmt.Sprintf("/api/incidents/%d/assess", id), nil, nil)
+
+		var body fullShelterBody
+		response := send(t, server, http.MethodPost, fmt.Sprintf("/api/incidents/%d/assign-shelter", id),
+			map[string]any{"shelter_id": 2}, &body)
+		if response.StatusCode != http.StatusConflict {
+			t.Fatalf("%s: placing %d people at Northbay returned %d, want 409", name, people, response.StatusCode)
+		}
+
+		offered := map[string]int{}
+		for _, alternative := range body.Alternatives {
+			offered[alternative.Name] = alternative.CapacityRemaining
+		}
+		t.Logf("%-26s %d people refused with %q; offered %v", name, people, body.Error, offered)
+		return offered, body.Error
+	}
+
+	offered, message := check("1. alternatives offered", 5)
+	if message != "Shelter has only 2 places remaining" {
+		t.Errorf("message changed to %q", message)
+	}
+	if len(offered) != 3 {
+		t.Errorf("five people should be offered the three shelters with room, got %v", offered)
+	}
+
+	offered, _ = check("2. only shelters that fit", 50)
+	for name, remaining := range offered {
+		if remaining < 50 {
+			t.Errorf("%s has only %d places but was offered for 50 people", name, remaining)
+		}
+	}
+	for _, unsuitable := range []string{"Northbay Primary School Gym", "Pelican Point Surf Club"} {
+		if _, ok := offered[unsuitable]; ok {
+			t.Errorf("%s cannot take 50 people but was offered", unsuitable)
+		}
+	}
+	if len(offered) != 2 {
+		t.Errorf("fifty people fit only at Riverside and Harbour View, got %v", offered)
+	}
+}

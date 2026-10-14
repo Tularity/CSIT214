@@ -73,3 +73,9 @@ export type AuditEntry = {
   entity_id: number
   detail: string
 }
+
+export type ShelterAlternative = {
+  id: number
+  name: string
+  capacity_remaining: number
+}

@@ -742,3 +742,45 @@ code {
 .panel a.button-primary {
   color: #ffffff;
 }
+
+.alternatives {
+  padding: 0.85rem 1rem;
+  border: 1px solid #9dc0da;
+  border-radius: 6px;
+  background: #eef5fa;
+}
+
+.alternatives-title {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+  color: var(--down);
+}
+
+.alternatives > p:not(.alternatives-title) {
+  margin: 0 0 0.6rem;
+}
+
+.alternatives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alternatives-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.alternatives-none {
+  border-color: #e7b3b3;
+  background: var(--down-surface);
+}
+
+.alternatives-none > p:last-child {
+  margin-bottom: 0;
+}

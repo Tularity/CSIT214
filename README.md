@@ -76,8 +76,9 @@ or delete `bin/data.db`). Each step names what to point out.
    High, and appears highlighted between the 74 and the 45.
 4. **Open it and assess it.** Before assessing, only *Assess* is offered.
 5. **Assign shelter.** Pick Northbay Primary School Gym first: it is refused
-   with "Shelter has only 2 places remaining" and nothing changes. Then pick
-   Harbour View Community Hall.
+   with "Shelter has only 2 places remaining", nothing changes, and the page
+   lists the shelters that can take all 10 people, roomiest first. Choose
+   Harbour View Community Hall from that list with *Place here*.
 6. **Dispatch responder.** Pick someone marked as on another job to show
    "Responder is not available", then pick an available responder.
 7. **Resolve.** The history at the bottom of the page now shows all five steps

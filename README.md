@@ -98,6 +98,7 @@ in exactly one column.
 | Incident detail with only the steps its status allows | ✓ | | | |
 | Assessment step | | ✓ | | |
 | Place people in a shelter, refusing one without room | ✓ | | | |
+| Offer the shelters with room when one is full (change CR-01) | ✓ | | | |
 | Shelter list with remaining places | ✓ | | | |
 | Shelter detail: adjust capacity, close a shelter | | | ✓ | |
 | Dispatch an available responder | ✓ | | | |

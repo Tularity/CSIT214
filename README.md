@@ -86,6 +86,7 @@ or delete `bin/data.db`). Each step names what to point out.
 8. **Dashboard again.** The places and the responder have come back; resolved
    is up by one. Finish on the **Activity log** to show nothing can be edited.
 
+## Feature coverage
 
 What the full design contains against what the prototype does. Each feature is
 in exactly one column.
